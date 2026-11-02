@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Neuman 第 12 章研讀重點</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --ground:#F4F6FA; --paper:#FFFFFF; --ink:#1F2E4A; --title:#17365D; --mute:#5E6E85; --line:#DCE3EE;
+  --zebra:#F5F7FB; --acc:#0E7C74; --acc-soft:#E1F3F1; --navy:#1F3864;
+  --paste:#EFF4FB; --paste-line:#C9D7EC; --warn:#FFF3DF; --warn-line:#F0C98A; --warn-ink:#7A4A00;
+  --goal:#1E6B4F; --ok:#1E6B4F; --ok-bg:#E4F1EA; --bad:#A02020; --bad-bg:#FAE9E9;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D131D; --paper:#141C28; --ink:#D6DFEC; --title:#EEF3FA; --mute:#95A5BA; --line:#2A3647;
+    --zebra:#172131; --acc:#5CC9BD; --acc-soft:#16302E; --navy:#9DBBE6;
+    --paste:#16233A; --paste-line:#2E4468; --warn:#34290F; --warn-line:#6B5220; --warn-ink:#F3D493;
+    --goal:#7FD3AA; --ok:#7FD3AA; --ok-bg:#16302E; --bad:#F2A0A0; --bad-bg:#3A1C1C;
+  color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D131D; --paper:#141C28; --ink:#D6DFEC; --title:#EEF3FA; --mute:#95A5BA; --line:#2A3647;
+  --zebra:#172131; --acc:#5CC9BD; --acc-soft:#16302E; --navy:#9DBBE6;
+  --paste:#16233A; --paste-line:#2E4468; --warn:#34290F; --warn-line:#6B5220; --warn-ink:#F3D493;
+  --goal:#7FD3AA; --ok:#7FD3AA; --ok-bg:#16302E; --bad:#F2A0A0; --bad-bg:#3A1C1C;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:64px}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+a{color:var(--acc)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #F2B705;outline-offset:2px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--ground) 92%,transparent);
+  backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.topin{max-width:1180px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.crumb{font-size:14px;color:var(--mute)}
+.sp{flex:1}
+.top button,.top .lk{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:3px 11px;font-size:14px;
+  text-decoration:none;color:var(--ink)}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:24px 60px;display:grid;
+  grid-template-columns:250px minmax(0,1fr);gap:32px;align-items:start}
+.side{position:sticky;top:70px;max-height:calc(100dvh - 90px);overflow:auto}
+.tocbox summary{font-weight:700;color:var(--title);cursor:pointer;margin-bottom:6px}
+.toc{list-style:none;margin:0;padding:0;font-size:14px;line-height:1.5}
+.toc li{margin:0}
+.toc a{display:block;color:var(--mute);text-decoration:none;padding:4px 10px;border-left:2px solid transparent}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:var(--acc);border-left-color:var(--acc);font-weight:700}
+.toc .t1 a{color:var(--ink);font-weight:700;margin-top:8px}
+.toc .t2 a{padding-left:22px;font-size:13px}
+.doc{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:36px clamp(18px,4vw,52px) 52px;min-width:0}
+.dh{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:8px}
+.eyebrow{font-size:13px;letter-spacing:.06em;color:var(--acc);font-weight:700}
+.dh h1{margin:6px 0 8px;font-size:clamp(24px,3.4vw,32px);line-height:1.3;color:var(--title);font-weight:900;text-wrap:balance}
+.subl{margin:0;color:var(--mute);font-size:14px}
+.h1{font-size:22px;color:var(--title);margin:42px 0 12px;padding-top:14px;border-top:3px solid var(--navy);font-weight:900}
+.h2{font-size:18px;color:var(--title);margin:28px 0 8px;display:flex;align-items:center;gap:10px;font-weight:700;text-wrap:balance}
+.qtag{background:var(--q);color:#fff;font-size:13px;font-weight:900;border-radius:999px;padding:1px 10px;flex:none}
+p{margin:8px 0;max-width:68ch}
+.note{font-size:14px;color:var(--mute)}
+.goal{background:var(--acc-soft);border-radius:10px;padding:10px 14px;color:var(--goal);max-width:none}
+.goal b{margin-right:10px}
+.lst{margin:8px 0;padding-left:1.4em;max-width:72ch}
+.lst li{margin:4px 0}
+.lst .lv2{list-style:circle;margin-left:1.4em;color:var(--ink)}
+.lst li b{color:var(--title)}
+.dim{color:var(--mute)}
+.paste{border:1px solid var(--paste-line);background:var(--paste);border-radius:12px;margin:14px 0;overflow:hidden}
+.ph{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--paste-line);font-size:13px;font-weight:700;color:var(--navy)}
+.ph span{flex:1}
+.copy{border:1px solid var(--paste-line);background:var(--paper);border-radius:7px;padding:2px 12px;font-size:13px}
+.copy.done{color:var(--acc);border-color:var(--acc)}
+.pb{padding:10px 16px 12px;font-size:15px}
+.pb p{margin:4px 0;max-width:none}
+.warn{background:var(--warn);border:1px solid var(--warn-line);border-radius:12px;padding:10px 16px;margin:14px 0;color:var(--warn-ink)}
+.warn p{max-width:none}
+.wh{font-weight:700}
+.tw{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;min-width:560px}
+th{background:var(--navy);color:#fff;text-align:left;padding:8px 10px;font-weight:700}
+:root[data-theme="dark"] th{color:#0D131D}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) th{color:#0D131D}}
+td{padding:7px 10px;border-top:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even) td{background:var(--zebra)}
+.blank{display:block;min-height:2.6em}
+.cap{font-weight:700;color:var(--title)}
+.fold{border:1px dashed var(--acc);border-radius:12px;margin:18px 0;padding:0 16px}
+.fold summary{cursor:pointer;padding:10px 0;font-weight:700;color:var(--acc)}
+.fold[open]{padding-bottom:10px}
+.triple{list-style:none;margin:14px 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.trow{display:grid;grid-template-columns:44px 1fr 1.9fr 1.2fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper)}
+.tno{background:var(--acc-soft);color:var(--acc);font-weight:900;font-size:15px;display:flex;align-items:flex-start;justify-content:center;padding-top:14px}
+.tc{padding:10px 14px;border-left:1px solid var(--line);min-width:0}
+.tc p{margin:4px 0;max-width:none;font-size:15px}
+.tl{display:block;font-size:12px;letter-spacing:.06em;color:var(--mute);font-weight:700;margin-bottom:2px}
+.tc.ai{background:var(--zebra)}
+.tin{margin:4px 0 0}
+.tin.paste{margin:4px 0 0}
+.tin .ph{padding:5px 10px}
+.tin .pb{padding:6px 12px 8px;font-size:14.5px}
+.tin.self{border:1px dashed var(--line);border-radius:10px;padding:6px 10px}
+.tin.self .pb{padding:4px 0 0}
+.verb{background:var(--navy);color:var(--paper);border-radius:6px;padding:1px 9px;font-size:13px;font-weight:700;flex:none}
+.noai{margin-left:8px;font-size:12px;color:var(--warn-ink);background:var(--warn);border-radius:999px;padding:1px 9px}
+.ph .verb{flex:none}
+.ph .verb+span{flex:1}
+.cmd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:2px 0 6px}
+.cmd .tl{margin:0}
+.cmd code{font-family:inherit;font-weight:700;background:var(--acc-soft);color:var(--acc);border-radius:8px;padding:2px 10px;font-size:15px}
+.copy1{border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:1px 10px;font-size:13px}
+.copy1.done{color:var(--acc);border-color:var(--acc)}
+.or{font-size:12px;color:var(--mute)}
+@media (max-width:1180px) and (min-width:761px){
+  .trow{grid-template-columns:44px 1fr 1fr}
+  .tno{grid-row:1/3}
+  .tc.need{grid-column:2;grid-row:1}
+  .tc.ai{grid-column:3;grid-row:1}
+  .tc.inp{grid-column:2/4;grid-row:2;border-top:1px solid var(--line)}
+}
+@media (max-width:760px){
+  .trow{grid-template-columns:1fr}
+  .tno{justify-content:flex-start;padding:8px 14px}
+  .tc{border-left:0;border-top:1px solid var(--line)}
+}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:14px}
+  .side{position:static;max-height:none}
+  .tocbox:not([open]){margin-bottom:0}
+}
+@media print{
+  .top,.side{display:none} .wrap{display:block;padding:0} .doc{border:0;padding:0}
+  details.fold{border:0} details.fold>*{display:block}
+  .copy{display:none}
+}
+
+/* ===== 學習單：彈性填寫欄位（2026-09-22 追加） ===== */
+.saver{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--acc-soft);
+  border:1px solid var(--acc);border-radius:12px;padding:9px 14px;margin:14px 0;font-size:.86rem;color:var(--ink)}
+.saver .sdot{width:9px;height:9px;border-radius:50%;background:var(--acc);flex:none}
+.saver.off{background:var(--warn);border-color:var(--warn-line);color:var(--warn-ink)}
+.saver.off .sdot{background:var(--warn-line)}
+.saver button{margin-left:auto;font:inherit;padding:4px 12px;border:1px solid var(--line);
+  border-radius:999px;background:var(--paper);color:var(--ink);cursor:pointer}
+.saver button:disabled{opacity:.45;cursor:not-allowed}
+.fld{margin:14px 0}
+.fh{margin:0 0 6px;font-weight:700;color:var(--title);font-size:.95rem;display:flex;
+  gap:8px;align-items:baseline;flex-wrap:wrap}
+.fhint{font-weight:400;font-size:.84rem;color:var(--mute)}
+.fin{display:block;width:100%;box-sizing:border-box;font:inherit;line-height:1.75;
+  color:var(--ink);background:var(--paste);border:1px solid var(--paste-line);border-radius:10px;
+  padding:10px 13px;resize:none;overflow:hidden;min-height:3.2em}
+.fin:focus{outline:2px solid var(--acc);outline-offset:1px;background:var(--paper)}
+.fin::placeholder{color:var(--mute);opacity:.65}
+.chk .cl{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.chk .cl li{margin:0}
+.chk label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;background:var(--zebra);
+  border:1px solid var(--line);border-radius:10px;padding:9px 13px}
+.chk input{margin:.28em 0 0;width:17px;height:17px;flex:none;accent-color:var(--acc)}
+.chk input:checked+span{color:var(--mute);text-decoration:line-through}
+.chk i{display:block;font-style:normal;font-size:.85rem;color:var(--mute);margin-top:2px;text-decoration:none}
+table.rt thead th{word-break:keep-all;font-size:.82rem;line-height:1.45}
+table.rt td.rc{padding:0;text-align:center}
+table.rt .rb{width:100%;min-height:42px;font:inherit;font-size:1.12rem;font-weight:700;border:0;
+  background:none;color:var(--mute);cursor:pointer}
+table.rt .rb[data-v="v"]{color:var(--ok);background:var(--ok-bg)}
+table.rt .rb[data-v="△"]{color:var(--warn-ink);background:var(--warn)}
+table.rt .rb[data-v="×"]{color:var(--bad);background:var(--bad-bg)}
+table.rt tbody th{background:var(--zebra);color:var(--title);text-align:left;white-space:nowrap}
+.rk{font-weight:400;color:var(--mute);font-size:.84rem;margin:0 0 6px}
+.cardwrap{margin:14px 0}
+.drawb{font:inherit;font-weight:700;padding:9px 18px;border-radius:999px;border:1px solid var(--acc);
+  background:var(--acc);color:#fff;cursor:pointer}
+.drawout{margin-left:10px;font-weight:700;color:var(--title)}
+.cards{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(248px,1fr))}
+.card{margin:0;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;
+  padding:12px 15px;background:var(--paper);transition:box-shadow .2s,transform .2s;
+  display:flex;flex-direction:column}
+.card.hit{box-shadow:0 0 0 3px var(--c);transform:translateY(-2px)}
+.card .cno{margin:0;font-size:1.5rem;font-weight:900;color:var(--c);line-height:1}
+.card .ct{margin:2px 0 2px;font-weight:700;color:var(--title)}
+.card .cn{margin:0 0 8px;font-size:.84rem;color:var(--mute)}
+.card .cl{margin:0 0 4px;font-size:.8rem;font-weight:700;color:var(--c);letter-spacing:.04em}
+.card ul{margin:0;padding-left:1.1em;font-size:.89rem}
+.card ul li{margin:3px 0}
+.cdone{display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:9px;
+  border-top:1px dashed var(--line);font-size:.85rem;cursor:pointer;color:var(--mute)}
+.cdone input{width:16px;height:16px;accent-color:var(--acc)}
+.rep{margin:4px 0 14px}
+table.rtb td{padding:0;vertical-align:top}
+table.rtb td textarea{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:.92rem;
+  line-height:1.65;border:0;background:none;color:var(--ink);padding:8px 10px;resize:none;
+  overflow:hidden;min-height:2.6em}
+table.rtb td textarea:focus{outline:2px solid var(--acc);outline-offset:-2px;background:var(--paper)}
+table.rtb .rmh,table.rtb .rmc{width:34px;text-align:center}
+table.rtb .rm{font:inherit;border:0;background:none;color:var(--mute);cursor:pointer;
+  font-size:1.05rem;line-height:1;padding:6px}
+table.rtb .rm:hover{color:var(--bad)}
+.addr{font:inherit;font-size:.88rem;margin-top:8px;padding:6px 14px;border-radius:999px;
+  border:1px dashed var(--acc);background:none;color:var(--acc);cursor:pointer}
+
+
+.pl{margin:10px 0}
+.inl{color:var(--acc);font-weight:700;text-decoration:none;border-bottom:2px solid var(--acc-soft)}
+.inl:hover{border-bottom-color:var(--acc)}
+/* 評量表：橫向捲動時左欄跟著留在畫面上，才知道自己在填哪一列 */
+table.rt tbody th{position:sticky;left:0;z-index:1;box-shadow:1px 0 0 var(--line)}
+/* 可增減表格：窄螢幕改為一列一張卡，欄名變成欄位上方的標籤（手機打字才不用左右捲） */
+@media (max-width:700px){
+  .rep .tw{overflow:visible}
+  .rep table.rtb,.rep table.rtb tbody,.rep table.rtb tr,.rep table.rtb td{display:block;width:auto;
+    min-width:0}   /* 蓋掉基礎 table{min-width:560px}，否則堆疊後仍會撐出橫向捲動 */
+  .rep table.rtb thead{display:none}
+  .rep table.rtb tr{position:relative;border:1px solid var(--line);border-radius:10px;
+    background:var(--zebra);padding:8px 10px 6px;margin:0 0 10px}
+  .rep table.rtb td{border:0;padding:0 0 7px}
+  .rep table.rtb td::before{content:attr(data-l);display:block;font-size:.78rem;font-weight:700;
+    color:var(--mute);margin:0 0 2px}
+  .rep table.rtb td textarea{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+  .rep table.rtb td.rmc{position:absolute;top:4px;right:4px;width:auto;padding:0}
+  .rep table.rtb td.rmc::before{content:none}
+}
+@media print{
+  .saver,.drawb,.drawout,.addr,.rm,.rmh,.rmc{display:none!important}
+  .fin,table.rtb td textarea{background:none;border-color:#999;
+    background-image:repeating-linear-gradient(transparent,transparent 1.74em,#CBD2DE 1.74em,#CBD2DE calc(1.74em + 1px))}
+  .fin{min-height:5.3em}
+  .card{break-inside:avoid;border-color:#999}
+  .card.hit{box-shadow:none}
+  table.rt .rb{color:#333}
+}
+</style>
+</head>
+<body>
+<div class="top"><div class="topin"><a class="lk" href="index.html">← 讀本目錄</a><span class="crumb">學生用｜研讀重點</span>
+<span class="sp"></span><button type="button" id="theme" aria-label="切換深淺色">◐</button>
+<button type="button" id="print">列印</button></div></div>
+<div class="wrap">
+  <aside class="side"><details class="tocbox"><summary>目錄</summary><ol class="toc"><li class="t1"><a href="#s1">零、這一章在回答什麼</a></li><li class="t2"><a href="#s2">閱讀地圖</a></li><li class="t2"><a href="#s3">一張總表：依變項的尺度，選描述與分析的方法</a></li><li class="t1"><a href="#s4">一、資料處理：編碼、輸入、清理（pp. 504–508）</a></li><li class="t2"><a href="#s5">兩種清理方法（p. 507）</a></li><li class="t2"><a href="#s6">範例 12.1　一次真實的資料清理（p. 508）</a></li><li class="t1"><a href="#s7">二、單變項的結果分析（pp. 507–516）</a></li><li class="t2"><a href="#s8">1. 次數分配（pp. 507–510）</a></li><li class="t2"><a href="#s9">2. 集中趨勢量數（pp. 509–513）</a></li><li class="t2"><a href="#s10">3. 變異量數（pp. 512–515）</a></li><li class="t2"><a href="#s11">4. Z 分數（pp. 515–516）</a></li><li class="t1"><a href="#s12">三、雙變項的結果分析（pp. 517–528）</a></li><li class="t2"><a href="#s13">1. 共變與統計獨立（pp. 517–518）</a></li><li class="t2"><a href="#s14">2. 散佈圖（pp. 518–521）</a></li><li class="t2"><a href="#s15">3. 交叉表與百分比方向（pp. 521–528）★</a></li><li class="t1"><a href="#s16">四、關聯量數（pp. 528–533）</a></li><li class="t1"><a href="#s17">五、超過兩個變項：統計控制與詳析模型（pp. 532–538）★★</a></li><li class="t2"><a href="#s18">三變項表：局部表格（pp. 534–536）</a></li><li class="t2"><a href="#s19">詳析典範的五種型態（範例 12.3，p. 537）</a></li><li class="t1"><a href="#s20">六、多元迴歸（pp. 539–541）</a></li><li class="t1"><a href="#s21">七、推論統計與兩類錯誤（pp. 540–545）★★</a></li><li class="t2"><a href="#s22">第一類型與第二類型錯誤（pp. 542–545）</a></li><li class="t2"><a href="#s23">範例 12.5　卡方檢定（pp. 543–544）</a></li><li class="t1"><a href="#s24">八、結論與統計軟體（pp. 545–547）</a></li><li class="t1"><a href="#s25">九、譯本統計說法更正一覽</a></li><li class="t1"><a href="#s26">十、中譯本邊欄名詞</a></li><li class="t1"><a href="#s27">十一、常見誤解</a></li><li class="t1"><a href="#s28">十二、讀完該能回答的問題</a></li><li class="t2"><a href="#s29">小練習一：讀這張交叉表</a></li><li class="t2"><a href="#s30">小練習二：改寫這些句子</a></li><li class="t1"><a href="#s31">附：頁碼與來源說明</a></li></ol></details></aside>
+  <main class="doc">
+    <header class="dh"><span class="eyebrow">115-1 教育與社會科學研究法｜Neuman 第 12 章</span><h1>Neuman 第 12 章「量化資料分析」研讀重點</h1><p class="subl">Neuman《當代社會研究法：質化與量化取向》中譯本（王佳煌等譯，2014）第 12 章（書頁 pp. 503–548）｜115-1 教育與社會科學研究法</p></header>
+<p class="note">本講義以轉述為主，不取代原書；頁碼一律為中譯本書頁（本課 PDF 第 1 頁＝書頁 503，PDF 頁＋502＝書頁）。標「教育例」與「寫進論文」的段落是本課的延伸，不是原書內容。</p>
+<div class="warn"><p class="wh">⚠ 先讀這一段：本章譯本有多處統計說法不精確</p><p>最要緊的一處：pp. 542、545 把 p &lt; .05 說成「有 95% 的機率是真實關係」。這是最常見的統計誤解，請不要照抄進論文。</p><p>正確意思是：如果母體中其實沒有關係（虛無假設為真），得到這麼極端結果的機率小於 5%。</p><p>其他更正（R² 不是「正確率」、卡方不宜當關聯強度、標準差計算表的錯號等）集中在本講義第九節。</p></div>
+<h2 id="s1" class="h1">零、這一章在回答什麼</h2>
+<p>一句話：問卷收回來之後，怎麼把一疊紙變成可以分析的資料，再一步步從「描述一個變項」走到「看兩個變項的關係」，再到「控制其他變項」與「推論到母體」。Neuman 說本章不能取代統計課，只涵蓋讀懂與做出量化研究所需的基本概念（p. 503）。</p>
+<p>原始數字要經過三道處理：①整理成電腦可讀的格式；②用表格、圖或統計量數摘要；③詮釋並賦予理論意義（p. 503）。本章的節次正好依這個順序。</p>
+<h3 id="s2" class="h2">閱讀地圖</h3>
+<div class="tw"><table><colgroup><col style="width:28.9%"><col style="width:11.8%"><col style="width:15.8%"><col style="width:43.4%"></colgroup><thead><tr><th scope="col">節</th><th scope="col">頁碼</th><th scope="col">優先度</th><th scope="col">一句話重點</th></tr></thead><tbody><tr><td>資料處理：編碼、輸入、清理</td><td>504–508</td><td>必讀</td><td>編碼簿、兩種清理方法；範例 12.1 是真實清理經驗</td></tr><tr><td>單變項：次數分配</td><td>507–510</td><td>必讀</td><td>人數與百分比、長條圖、分組要互斥</td></tr><tr><td>單變項：集中趨勢</td><td>509–513</td><td>必讀</td><td>眾數、中位數、平均數；尺度決定能用哪一種</td></tr><tr><td>單變項：變異量數</td><td>512–515</td><td>必讀</td><td>全距、百分位數、標準差（圖 12.4 有錯號）</td></tr><tr><td>Z 分數</td><td>515–516</td><td>必讀</td><td>離平均數幾個標準差；可跨群體比較</td></tr><tr><td>雙變項：共變與散佈圖</td><td>517–521</td><td>必讀</td><td>形式、方向、強度；圖表 12.1 刻度陷阱</td></tr><tr><td>雙變項：交叉表與百分比</td><td>521–528</td><td>必讀 ★</td><td>在自變項的每一類別內算百分比</td></tr><tr><td>關聯量數</td><td>528–533</td><td>必讀</td><td>表 12.4 依尺度選量數；兩個手算資訊箱可略讀</td></tr><tr><td>統計控制與詳析模型</td><td>532–538</td><td>必讀 ★★</td><td>五種型態：複製、標明、闡明、解釋、抑制</td></tr><tr><td>多元迴歸</td><td>539–541</td><td>必讀</td><td>R² 與標準化迴歸係數 β</td></tr><tr><td>推論統計與兩類錯誤</td><td>540–545</td><td>必讀 ★★</td><td>統計顯著性、顯著水準、卡方；請搭配第九節更正</td></tr><tr><td>結論與統計軟體</td><td>545–547</td><td>必讀（短）</td><td>假設被推翻不是失敗；事實不會自己說話</td></tr></tbody></table></div>
+<h3 id="s3" class="h2">一張總表：依變項的尺度，選描述與分析的方法</h3>
+<div class="tw"><table><colgroup><col style="width:17.1%"><col style="width:27.6%"><col style="width:26.3%"><col style="width:28.9%"></colgroup><thead><tr><th scope="col"></th><th scope="col">名目（如性別、學制）</th><th scope="col">順序（如滿意度等級）</th><th scope="col">區間／比率（如分數、時數）</th></tr></thead><tbody><tr><td>集中趨勢</td><td>眾數</td><td>中位數（眾數）</td><td>平均數（偏態時補中位數）</td></tr><tr><td>離散程度</td><td>—</td><td>全距、百分位數</td><td>標準差、全距、百分位數</td></tr><tr><td>兩變項的關係</td><td>交叉表＋卡方；λ、Cramér's V</td><td>交叉表；γ、Kendall's τ</td><td>散佈圖＋相關係數 r</td></tr><tr><td>類別 × 連續</td><td>各類別的平均數（表 12.3）；推論時用 t 檢定、變異數分析</td><td>同左</td><td>—</td></tr><tr><td>多變項</td><td>三變項交叉表（詳析模型）</td><td>同左</td><td>多元迴歸</td></tr></tbody></table></div>
+<p class="note">本表整理自 pp. 509–515、表 12.4（p. 533）與圖表 12.2（p. 541）；t 檢定、變異數分析與 Cramér's V 為本課補充。</p>
+<h2 id="s4" class="h1">一、資料處理：編碼、輸入、清理（pp. 504–508）</h2>
+<div class="tw"><table><colgroup><col style="width:15.8%"><col style="width:32.9%"><col style="width:23.7%"><col style="width:27.6%"></colgroup><thead><tr><th scope="col">概念</th><th scope="col">意思</th><th scope="col">書中例子</th><th scope="col">教育例</th></tr></thead><tbody><tr><td>編碼程序</td><td>把數字指派給變項屬性的一組規則，每個類別（含遺失值）都要有碼</td><td>男＝1、女＝2</td><td>學制：國小＝1、國中＝2、高中＝3；未填＝9</td></tr><tr><td>編碼簿</td><td>寫明編碼程序與各變項在檔案中位置的文件，要多備份</td><td>圖 12.1</td><td>題號、變項名、計分方式、反向題、遺失值代碼</td></tr><tr><td>預先編碼</td><td>把代碼直接印在問卷上</td><td>問卷印「1 代表男性」</td><td>線上問卷的選項值</td></tr><tr><td>資料格式</td><td>一列一個個案、一欄一個變項</td><td>250 人的電話調查＝250 列 × 240 行</td><td>Google 表單匯出的試算表</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>最好在蒐集資料前就想好編碼（p. 504）。</b><span class="">弄丟編碼簿，就讀不懂自己的資料。</span></li></ul>
+<h3 id="s5" class="h2">兩種清理方法（p. 507）</h3>
+<div class="tw"><table><colgroup><col style="width:18.4%"><col style="width:26.3%"><col style="width:27.6%"><col style="width:27.6%"></colgroup><thead><tr><th scope="col">方法</th><th scope="col">做法</th><th scope="col">書中例子</th><th scope="col">教育例</th></tr></thead><tbody><tr><td>可能編碼式清理</td><td>找不可能出現的代碼</td><td>性別只能是 1 或 2，卻出現 4</td><td>五點量表出現 6；年資填 85</td></tr><tr><td>列聯式清理</td><td>交叉兩個變項，找邏輯上不可能的組合</td><td>國中二年級沒讀完，職業卻是醫生</td><td>學制填國小，卻勾「擔任高中導師」</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>抽查：</b><span class="">隨機抽 10%–15% 重新編碼；若有錯就全部重查。</span></li><li class="lv1"><b>資料只能變粗、不能變細：</b><span class="">比率尺度的收入可以合併成五個等級，反過來不行。</span></li></ul>
+<h3 id="s6" class="h2">範例 12.1　一次真實的資料清理（p. 508）</h3>
+<p>作者與學生調查校園性騷擾，發出 3,000 多張答案卡。他們遇到：約 400 張用鋼筆或塗太淺、25 張無法使用、單選題畫兩個答案、性別畫成 4、整份答案都一樣、約 35 人答「否」卻沒跳題。最有意思的是：約 600 人勾「美國原住民」，但全校真正的原住民約 20 人——多數是白人新生不懂這個詞。團隊把這 600 人全部重新編碼為白人，明知會把少數真正的原住民分錯，但這個誤差遠小於保留 600 筆錯誤資料。</p>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：說明編碼方式（計分、反向題、遺失值代碼、開放題如何歸類），編碼簿可放附錄；寫明無效問卷的判定標準（例如漏答過多、整份同一選項、跳答矛盾）。</p><p>第四章開頭：報告發出、回收、有效份數與剔除理由。範例 12.1 說明這段文字不是形式，而是讀者判斷資料品質的依據。</p><p>若像範例 12.1 那樣做了取捨，要在報告中說明理由與代價。</p></div>
+<h2 id="s7" class="h1">二、單變項的結果分析（pp. 507–516）</h2>
+<h3 id="s8" class="h2">1. 次數分配（pp. 507–510）</h3>
+<p>描述單一變項最簡單的方法，四種尺度都可用；可用長條圖（類別變項）、直方圖或次數多邊圖（連續變項）呈現。連續變項分組時，各組必須互斥。教育例：年資分成 0–5、6–10、11–20、21 年以上，不能寫成 5–10、10–15。</p>
+<h3 id="s9" class="h2">2. 集中趨勢量數（pp. 509–513）</h3>
+<div class="tw"><table><colgroup><col style="width:13.2%"><col style="width:35.5%"><col style="width:17.1%"><col style="width:34.2%"></colgroup><thead><tr><th scope="col">量數</th><th scope="col">意思</th><th scope="col">可用的尺度</th><th scope="col">書中例子</th></tr></thead><tbody><tr><td>眾數</td><td>最常出現的值，可以不只一個</td><td>四種皆可</td><td>6、5、7、10、9、5、3、5 → 5</td></tr><tr><td>中位數</td><td>第 50 百分位數，不易受極端值影響</td><td>順序以上</td><td>17、20、26、30、50、70 → 28</td></tr><tr><td>平均數</td><td>總和除以個數，易受極端值影響</td><td>區間、比率</td><td>同一組數字 → 35.5</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>常態分配時三者相等；偏態時分開（圖 12.3）：</b><span class="">平均數會被長尾拉過去，眾數留在峰頂，中位數居中。</span></li><li class="lv1"><b>教育例：</b><span class="">學生每週補習時數多數為 0–4 小時、少數 20 小時以上——平均數被拉高，報告中位數較能代表典型學生。</span></li></ul>
+<h3 id="s10" class="h2">3. 變異量數（pp. 512–515）</h3>
+<p>平均數相同的兩群人，離散程度可以完全不同。書中例子：酒吧前排隊的人年齡 25–35，冰淇淋店前 5–55，中位數與平均數都是 30（p. 512）。</p>
+<div class="tw"><table><colgroup><col style="width:14.5%"><col style="width:36.8%"><col style="width:48.7%"></colgroup><thead><tr><th scope="col">量數</th><th scope="col">意思</th><th scope="col">限制或用途</th></tr></thead><tbody><tr><td>全距</td><td>最大值減最小值</td><td>只看兩端；30、30、30、30、30、65 與 20、45、46、48、50、55 全距都是 35</td></tr><tr><td>百分位數</td><td>等於或低於某分數的個案百分比</td><td>中位數＝第 50 百分位數；常用第 25、75</td></tr><tr><td>標準差</td><td>分數離平均數有多遠（離差平方的平均再開根號）</td><td>最全面、最常用；主要用來比較群體的同質性</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>圖 12.4（p. 514）：</b><span class="">8 人受教育年數，平均 12.5 年，平方和 88，除以 8 得變異數 11，標準差 3.317 年。</span></li><li class="lv1"><b>自己用 JASP 驗算會得到約 3.546，</b><span class="">因為軟體除以 N−1（樣本標準差）。圖下方的公式其實也是除以 N−1，與計算步驟不一致，見第九節。</span></li><li class="lv1"><b>教育例：</b><span class="">兩校會考平均相同，但一校標準差大，代表校內學習落差較嚴重，政策意涵不同。量表題目標準差很小，可能是缺乏鑑別度。</span></li></ul>
+<h3 id="s11" class="h2">4. Z 分數（pp. 515–516）</h3>
+<p>Z＝（分數−平均數）÷標準差，表示離平均數幾個標準差，可跨群體比較相對位置。</p>
+<ul class="lst"><li class="lv1"><b>書中例子：</b><span class="">國王學院平均 2.62、標準差 .50，蘇捷特 3.62 → Z＝2；皇后學院平均 3.24、標準差 .40，喬治 3.64 → Z＝1。蘇捷特的相對位置較高。</span></li><li class="lv1"><b>資訊箱 12.1 的數線法：</b><span class="">畫一條 −3 到 +3 的線，0 對應平均數。年齡平均 7、標準差 2 → 5 歲是 Z＝−1，11 歲是 Z＝+2。</span></li><li class="lv1"><b>教育例：</b><span class="">兩校段考難度不同，甲校 85 分與乙校 78 分不能直接比，先換成各校的 Z 分數。</span></li></ul>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：變項的測量尺度決定可用的量數，這正是「資料分析方法」要寫出的依據。李克特量表加總分常被當作近似區間尺度，第三章最好一句話交代這個假定。</p><p>第四章：樣本背景用次數與百分比表；各構面報告平均數與標準差，只報平均數讀者無法判斷差異的意義；明顯偏態時補中位數。</p></div>
+<h2 id="s12" class="h1">三、雙變項的結果分析（pp. 517–528）</h2>
+<h3 id="s13" class="h2">1. 共變與統計獨立（pp. 517–518）</h3>
+<ul class="lst"><li class="lv1"><b>共變：</b><span class="">兩個變項一起改變，知道一個就能推測另一個。</span></li><li class="lv1"><b>統計獨立：</b><span class="">兩個變項沒有關聯，知道一個對推測另一個沒有幫助；虛無假設就是主張兩者獨立。</span></li></ul>
+<p class="note">用語提醒：譯本 p. 517 說「預期壽命是由收入決定的」，邊欄也用「互相影響」。共變只代表可以預測，不代表因果；第四章請寫「相關」「關聯」。</p>
+<h3 id="s14" class="h2">2. 散佈圖（pp. 518–521）</h3>
+<p>把每個個案在兩個變項上的值畫成一點。自變項放橫軸、依變項放縱軸，最低值在左下角。只適用於區間或比率變項。</p>
+<div class="tw"><table><colgroup><col style="width:14.5%"><col style="width:46.1%"><col style="width:39.5%"></colgroup><thead><tr><th scope="col">看什麼</th><th scope="col">可能的樣子</th><th scope="col">書中例子</th></tr></thead><tbody><tr><td>形式</td><td>獨立（點隨機散落）、線性、曲線（U 形或倒 U 形）</td><td>—</td></tr><tr><td>方向</td><td>正向（左下到右上）、負向（左上到右下）</td><td>正：收入與壽命；負：教育年數與子女數（圖 12.5）</td></tr><tr><td>強度</td><td>點圍繞直線越緊，關係越強</td><td>圖 12.5 的點相當集中</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>圖表 12.1（p. 519）：</b><span class="">同一份企業倒閉率資料，縱軸刻度 60–160 看起來劇烈波動，刻度 0–400 看起來幾乎持平。讀圖要先看刻度——這也是檢查 AI 生成圖表的好練習。</span></li><li class="lv1"><b>教育例：</b><span class="">每週使用平板時數與數學成績可能是倒 U 形，只算直線相關會低估關係，所以要先畫散佈圖。</span></li></ul>
+<h3 id="s15" class="h2">3. 交叉表與百分比方向（pp. 521–528）★</h3>
+<p>交叉表（列聯表）適用任何尺度，連續變項要先分組。原始次數難以比較，要換成百分比。Neuman 用「年齡 × 對修改法定飲酒年齡的態度」（N＝101，遺失 8 人）示範。</p>
+<p class="cap">表 12.1　直行百分比表（p. 526，年齡為自變項，放在直行）</p><div class="tw"><table><colgroup><col style="width:15.8%"><col style="width:17.1%"><col style="width:15.8%"><col style="width:15.8%"><col style="width:17.1%"><col style="width:18.4%"></colgroup><thead><tr><th scope="col">態度</th><th scope="col">未滿 30 歲</th><th scope="col">30–45 歲</th><th scope="col">46–60 歲</th><th scope="col">61 歲以上</th><th scope="col">總數</th></tr></thead><tbody><tr><td>同意</td><td>76.9%</td><td>40.0%</td><td>11.4%</td><td>20.0%</td><td>36.6%</td></tr><tr><td>沒意見</td><td>11.5</td><td>40.0</td><td>28.6</td><td>13.3</td><td>24.8</td></tr><tr><td>不同意</td><td>11.5</td><td>20.0</td><td>60.0</td><td>66.7</td><td>38.6</td></tr><tr><td>總數（N）</td><td>100%（26）</td><td>100%（25）</td><td>100%（35）</td><td>100%（15）</td><td>100%（101）</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>規則：</b><span class="">在自變項的每一類別內算百分比（每一欄加起來 100%），再跨自變項類別比較同一列。讀法：未滿 30 歲者 76.9% 同意，是唯一多數同意的年齡組；年紀越大，不同意的比例越高。</span></li><li class="lv1"><b>另一個方向回答另一個問題：</b><span class="">橫列百分比是「同意的人當中，各年齡組占多少」（同意者有 54.1% 未滿 30 歲），描述的是組成，而且受各組人數影響。</span></li><li class="lv1"><b>表格的部件（圖 12.6，p. 524）：</b><span class="">標題、變項與類別名稱、欄外值（行列總數）、細格、表格主體、遺失個案數。百分比表要在 100% 旁附上 N。</span></li><li class="lv1"><b>排序陷阱（表 12.2A／B，p. 527）：</b><span class="">同一份「年齡 × 教育年數」資料，年齡由小排到大看起來像正相關，反過來排才看出真正的負相關。順序類別要固定由低到高排。</span></li><li class="lv1"><b>不算百分比的雙變項表（表 12.3，p. 528）：</b><span class="">一個變項是類別、另一個是連續時，列出各類別的平均數。同意者平均 26.2 歲、沒意見 44.5 歲、不同意 61.9 歲。</span></li></ul>
+<p class="note">譯本 p. 525 寫「如果年齡是原因變項，就應計算橫列百分比」，與同頁前文、圖 12.6 及表 12.1 的版面（年齡在直行、算直行百分比）都矛盾。請以「在自變項的每一類別內算百分比」為準。</p>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：說明交叉表的百分比依哪個方向計算（通常以自變項為分母），以及細格人數太少時如何合併類別。</p><p>第四章：交叉表要有標題、類別名稱、欄外值、N 與遺失值；文字比較的方向要和百分比的方向一致，例如「國三學生同意者占 X%，高於國一的 Y%」。</p></div>
+<h2 id="s16" class="h1">四、關聯量數（pp. 528–533）</h2>
+<p>關聯量數把雙變項關係濃縮成一個數字，表達強度，通常也表達方向。多數依循「消減誤差比例」（PRE）的邏輯：知道 X 之後猜 Y，可以少犯多少錯。兩變項獨立時為 0。</p>
+<p class="cap">表 12.4　五種關聯量數（p. 533，提醒欄為本課補充）</p><div class="tw"><table><colgroup><col style="width:23.7%"><col style="width:15.8%"><col style="width:14.5%"><col style="width:46.1%"></colgroup><thead><tr><th scope="col">量數</th><th scope="col">資料尺度</th><th scope="col">範圍</th><th scope="col">提醒</th></tr></thead><tbody><tr><td>Lambda（λ）</td><td>名目</td><td>0～1</td><td>—</td></tr><tr><td>Gamma（γ）</td><td>順序</td><td>−1～+1</td><td>資訊箱 12.2：健康 × 快樂，γ＝.29，作者判為薄弱正向</td></tr><tr><td>Kendall's τ</td><td>順序</td><td>−1～+1</td><td>可處理 γ 的一些問題</td></tr><tr><td>Pearson 相關（書中記為 ρ）</td><td>區間、比率</td><td>−1～+1</td><td>只測直線關係；r＝0 可能是曲線關係。r² 為可解釋的變異比例</td></tr><tr><td>卡方（χ²）</td><td>名目、順序</td><td>0～無限大</td><td>會隨樣本數變大，不宜直接比強弱；要談強度改用 Cramér's V</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>資訊箱 12.3（pp. 530–531）：</b><span class="">相關係數＝兩個變項 Z 分數的乘積加總後除以 N。五瓶紅酒的年齡與價格，r＝.90。</span></li><li class="lv1"><b>γ 的強弱分界（0.25、0.50、0.75）</b><span class="">是作者的經驗法則，不是統計標準；論文引用要註明出處。</span></li><li class="lv1"><b>教育例：</b><span class="">閱讀興趣等級 × 閱讀時數等級（γ 或 τ）；AI 備課時數 × 備課效能感總分（r）；學校所在地 × 是否開 AI 選修課（卡方＋Cramér's V）。</span></li></ul>
+<h2 id="s17" class="h1">五、超過兩個變項：統計控制與詳析模型（pp. 532–538）★★</h2>
+<p>要說 X 影響 Y，除了有關聯、時序正確，還要排除使關係變成虛假的替代解釋。實驗靠設計排除；非實驗研究則用控制變項以統計方式處理（p. 532）。</p>
+<ul class="lst"><li class="lv1"><b>書中例子：</b><span class="">個子高的青少年較愛打棒球——也許只是因為男生較高、男生又較愛棒球。控制性別後，若高的男生、高的女生都較愛棒球，原關係不是虛假的；若關係消失，真正的原因是性別。</span></li><li class="lv1"><b>控制變項（p. 532）：</b><span class="">代表替代解釋的「第三個」變項。</span></li><li class="lv1"><b>淨效果（p. 534）：</b><span class="">以統計方式移除控制變項的影響後，自變項對依變項的效果。</span></li></ul>
+<h3 id="s18" class="h2">三變項表：局部表格（pp. 534–536）</h3>
+<p>在控制變項的每一類別內各做一張自變項 × 依變項的表，稱為局部表格（表 12.5 把飲酒年齡的例子再依性別分開）。限制：控制變項類別太多難以閱讀；連續變項要先分組；個案會被切散——3 類 × 12 格＝36 格，每格平均 5 人就需要 180 人。</p>
+<h3 id="s19" class="h2">詳析典範的五種型態（範例 12.3，p. 537）</h3>
+<div class="tw"><table><colgroup><col style="width:10.5%"><col style="width:28.9%"><col style="width:27.6%"><col style="width:32.9%"></colgroup><thead><tr><th scope="col">型態</th><th scope="col">加入控制變項後</th><th scope="col">控制變項的位置</th><th scope="col">教育例</th></tr></thead><tbody><tr><td>複製</td><td>各局部表格的關係與原本相同</td><td>沒有效果</td><td>師生關係與學習投入的關聯，男生女生一樣強</td></tr><tr><td>標明</td><td>關係只出現在某一個局部表格</td><td>標出關係成立的條件</td><td>使用 AI 寫作業與寫作成績的關聯，只在高年級成立</td></tr><tr><td>闡明</td><td>關係大幅減弱或消失</td><td>中介變項（在自變項與依變項之間）</td><td>家庭社經 → 家長教育參與 → 學業成就</td></tr><tr><td>解釋</td><td>關係大幅減弱或消失</td><td>早於自變項（原關係是虛假的）</td><td>學校規模與升學率的關聯，控制城鄉後消失</td></tr><tr><td>抑制</td><td>原本沒有關係，局部表格中卻出現</td><td>把關係遮住了</td><td>整體看年資與 AI 使用意願無關，分成有無參加研習後各自出現關係</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>闡明與解釋在表格上長得一模一樣，</b><span class="">光看表格分不出來；差別在控制變項在因果順序中的位置，要靠理論判斷（p. 538）。</span></li><li class="lv1"><b>與今日用語的對照（本課補充）：</b><span class="">闡明相當於中介分析，標明相當於調節（交互作用），解釋則是第 6 章的虛假關係。</span></li></ul>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：研究架構圖列出控制變項，並寫清楚每一個代表哪一種替代解釋、在因果順序中的位置（前置、中介或調節）。</p><p>第四章：先報雙變項結果，再報加入控制後的結果，明說關係是否維持；若關係只在某一組成立，要寫出條件，不能概括全體。</p></div>
+<h2 id="s20" class="h1">六、多元迴歸（pp. 539–541）</h2>
+<p>多元迴歸能同時控制多個變項（百分比表幾乎只能一次控制一個），要求依變項為區間或比率尺度。結果告訴我們兩件事：整組自變項能解釋依變項多少（R²），以及在控制其他變項後，每個變項效果的方向與大小（標準化迴歸係數 β）。</p>
+<p class="cap">範例 12.4　依變項：政治意識型態指數，分數越高越偏自由派（p. 540）</p><div class="tw"><table><colgroup><col style="width:50.0%"><col style="width:50.0%"></colgroup><thead><tr><th scope="col">自變項</th><th scope="col">標準化迴歸係數 β</th></tr></thead><tbody><tr><td>居住地區＝南方</td><td>−.19</td></tr><tr><td>年齡</td><td>.01</td></tr><tr><td>收入</td><td>−.44</td></tr><tr><td>受教育年數</td><td>.23</td></tr><tr><td>參與宗教活動</td><td>−.39</td></tr><tr><td>R²</td><td>.38</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>讀法：</b><span class="">收入高、常參加宗教活動、住南方與偏保守有關（係數為負）；教育程度高與偏自由派有關；年齡幾乎沒有效果。收入的效果約為南方居住地的兩倍（.44 對 .19）。</span></li><li class="lv1"><b>R²＝.38 的正確說法：</b><span class="">依變項的變異有 38% 可由這組自變項解釋。譯本說成「預測的正確率為 38%」，不精確。</span></li><li class="lv1"><b>β 怎麼看控制效果：</b><span class="">若 X 與 Y 的相關為 .75，加入控制變項後 β 仍是 .75，表示控制變項沒有效果；降到 .20 表示有效果（p. 539）。</span></li><li class="lv1"><b>作者的安慰（注解 6）：</b><span class="">初學者常意外迴歸只能解釋 10%–50% 的變異，但這已比隨便猜好得多，而且多數理論關心的是個別變項的效果。</span></li></ul>
+<p class="cap">圖表 12.2　敘述統計主要類型摘要（p. 541）</p><div class="tw"><table><colgroup><col style="width:15.8%"><col style="width:42.1%"><col style="width:42.1%"></colgroup><thead><tr><th scope="col">類型</th><th scope="col">統計技術</th><th scope="col">目的</th></tr></thead><tbody><tr><td>單變項</td><td>次數分配、集中趨勢、標準差、Z 分數</td><td>描述單一變項</td></tr><tr><td>雙變項</td><td>相關、百分比表、卡方</td><td>描述兩個變項的關係</td></tr><tr><td>多變項</td><td>詳析典範、多元迴歸</td><td>描述多個變項的關係，或多個自變項如何影響一個依變項</td></tr></tbody></table></div>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：寫明依變項與各自變項的尺度（類別變項要做虛擬編碼）、控制變項名單與理由，以及迴歸前要檢查的假定（線性、殘差常態、共線性）。</p><p>第四章：範例 12.4 是簡化版；學術格式通常還要列 B、SE、β、t、p，以及 R²、調整後 R² 與 F 檢定。</p></div>
+<h2 id="s21" class="h1">七、推論統計與兩類錯誤（pp. 540–545）★★</h2>
+<p>前面都是描述樣本的敘述統計。推論統計用機率理論判斷：樣本中看到的關係，是否大到不太可能只是抽樣的巧合。它的前提是機率（隨機）抽樣（pp. 540–541）。</p>
+<div class="tw"><table><colgroup><col style="width:19.7%"><col style="width:80.3%"></colgroup><thead><tr><th scope="col">概念</th><th scope="col">正確的意思</th></tr></thead><tbody><tr><td>統計顯著性</td><td>結果不太可能只是隨機抽樣誤差造成的。它不證明任何事，也不等於實質重要</td></tr><tr><td>p 值</td><td>假設母體中其實沒有關係（虛無假設為真），得到至少這麼極端結果的機率</td></tr><tr><td>顯著水準 α</td><td>研究者事先設定、願意承擔的第一類型錯誤上限，常用 .05、.01、.001</td></tr><tr><td>未達顯著</td><td>寫「未能拒斥虛無假設」，不寫「接受虛無假設」或「證明沒有差異」</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>統計顯著 ≠ 實質重要（p. 541）：</b><span class="">指甲長度與說法語的能力也可能碰巧顯著相關。教育例：兩組差異 p＝.03，還要報效果量（如 Cohen's d），說明差異在教育上是否有意義。</span></li></ul>
+<h3 id="s22" class="h2">第一類型與第二類型錯誤（pp. 542–545）</h3>
+<p class="cap">表 12.6（p. 545；原表用「具有因果關係」，統計檢定其實只能判斷關聯）</p><div class="tw"><table><colgroup><col style="width:34.2%"><col style="width:32.9%"><col style="width:32.9%"></colgroup><thead><tr><th scope="col">研究者的判斷 ╲ 實際情況</th><th scope="col">其實沒有關係</th><th scope="col">其實有關係</th></tr></thead><tbody><tr><td>判斷沒有關係</td><td>正確</td><td>第二類型錯誤</td></tr><tr><td>判斷有關係</td><td>第一類型錯誤</td><td>正確</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>類比：</b><span class="">冤枉無辜是第一類型錯誤，縱放有罪是第二類型錯誤（p. 544）。</span></li><li class="lv1"><b>兩者此消彼長：</b><span class="">顯著水準設得越嚴（如 .0001），越不會犯第一類型錯誤、越可能犯第二類型錯誤；設得越鬆（如 .10）則相反。.05 是約定俗成的折衷。</span></li><li class="lv1"><b>教育例：</b><span class="">判定新的 AI 寫作教學法有效其實無效（第一類型），學校白白推廣；判定無效其實有效（第二類型），錯失好方法。一個班 25 人的小樣本研究特別容易犯第二類型錯誤。</span></li><li class="lv1"><b>推論統計的限制（p. 545）：</b><span class="">只處理抽樣誤差；抽樣架構不佳、量表設計不良等非抽樣誤差不在它的考量內。</span></li></ul>
+<h3 id="s23" class="h2">範例 12.5　卡方檢定（pp. 543–544）</h3>
+<p>學生身高 × 研究方法成績（N＝200）。做法：先依欄外值算出「兩變項獨立時每格應有的人數」（期望值），再把每格的（觀察值−期望值）² ÷ 期望值加總。例如左上格觀察 30、期望 17.5，貢獻 12.5²÷17.5＝8.93；全表加總 χ²＝45.7。</p>
+<ul class="lst"><li class="lv1"><b>卡方只告訴你兩變項不獨立，</b><span class="">不告訴你方向。</span></li><li class="lv1"><b>判斷顯著要看自由度，不是看格數：</b><span class="">3×3 表的自由度＝(3−1)(3−1)＝4，α＝.001 的臨界值約 18.47，45.7 遠大於此，所以顯著。</span></li><li class="lv1"><b>身高與成績是作者刻意舉的無理論例子，</b><span class="">正好呼應「統計顯著 ≠ 實質重要」。</span></li></ul>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：寫明顯著水準與檢定方法，說明樣本是否為機率樣本；便利樣本要在研究限制中說明推論的限度。小樣本研究可先做考驗力分析估算所需人數。</p><p>第四章：報告精確 p 值與效果量，例如 χ²(4, N＝200)＝45.7, p &lt; .001, Cramér's V＝…。不要寫「有 95% 的機率是真的」。</p><p>討論：未達顯著時，考慮是否可能是樣本太小造成的第二類型錯誤，而不是直接宣稱沒有差異。</p></div>
+<h2 id="s24" class="h1">八、結論與統計軟體（pp. 545–547）</h2>
+<ul class="lst"><li class="lv1"><b>結果不支持假設，不代表研究做錯：</b><span class="">研究的目標是反映社會世界，不是捍衛自己的假設。好研究可能推翻假設，差研究反而可能支持假設。</span></li><li class="lv1"><b>錯誤可能出在每個階段：</b><span class="">設計、測量、蒐集、編碼、計算、製表、詮釋。</span></li><li class="lv1"><b>「事實並不會為自己說話」（p. 547）：</b><span class="">每張表都要回到理論賦予意義，同時保留讓新觀念浮現的空間。</span></li><li class="lv1"><b>資訊箱 12.4（p. 546）：</b><span class="">會操作軟體不等於懂統計，可能違反假定、算出「看起來很複雜但毫無意義」的結果。本課用的 JASP 同樣適用這個提醒。</span></li></ul>
+<p class="note">資訊箱 12.4 的軟體名單已過時，且有兩處誤植：「Strata」應為 Stata，「BMPD」應為 BMDP。</p>
+<h2 id="s25" class="h1">九、譯本統計說法更正一覽</h2>
+<p>以下是讀本中不精確或印錯的地方。學生寫論文時最容易照抄的是前四項。</p>
+<div class="tw"><table><colgroup><col style="width:13.2%"><col style="width:42.1%"><col style="width:44.7%"></colgroup><thead><tr><th scope="col">頁碼</th><th scope="col">譯本的說法</th><th scope="col">較精確的說法</th></tr></thead><tbody><tr><td>541、542、545</td><td>p &lt; .05 表示「有 95% 的機率是真實關係」「95% 的信心結果來自真正的關係」</td><td>如果虛無假設為真，得到這麼極端結果的機率小於 5%；p 值不是假設為真的機率</td></tr><tr><td>539–540</td><td>R²＝.38 是「預測正確率 38%」</td><td>依變項的變異有 38% 可由這組自變項解釋</td></tr><tr><td>533、544</td><td>卡方是關聯強度量數；「關聯越強卡方越大」</td><td>卡方會隨樣本數變大；談強度用 φ 或 Cramér's V</td></tr><tr><td>541、544</td><td>「接受」虛無假設</td><td>「未能拒斥」虛無假設</td></tr><tr><td>544</td><td>卡方顯著性看「9 個細格」</td><td>看自由度（3×3 表 df＝4）</td></tr><tr><td>545</td><td>.0001 的例句寫「才會把結果歸因為機會」</td><td>方向相反：結果罕見到萬分之一時，才判定它不是機會造成的</td></tr><tr><td>545</td><td>設 .10 表示結果純由機會造成的機率是 10%</td><td>願意承擔最多 10% 的第一類型錯誤風險</td></tr><tr><td>531</td><td>相關係數是「Z 分數的平方」加總</td><td>兩個變項 Z 分數的乘積加總後除以 N</td></tr><tr><td>539</td><td>β 範圍 0 到 ±0.99、β 等於相關係數</td><td>β 通常在 −1 到 +1，共線性時可能超過；只有簡單迴歸時 β 才等於 r</td></tr><tr><td>533</td><td>用 ρ 表示 Pearson 相關</td><td>樣本 Pearson 相關慣例記為 r</td></tr><tr><td>514</td><td>圖 12.4「8−12.5＝4.5」；第三欄標題漏了平方</td><td>應為 −4.5；欄名應為（分數−平均數）²</td></tr><tr><td>514</td><td>計算步驟除以 N（3.317），下方公式除以 N−1</td><td>軟體報告的是除以 N−1 的樣本標準差（約 3.546）</td></tr><tr><td>514</td><td>離差加總為零是因為「平均距離都相同」</td><td>平均數是平衡點，正負離差剛好相消</td></tr><tr><td>516</td><td>標準差符號印成 δ</td><td>母體用 σ，樣本用 s 或 SD</td></tr><tr><td>520</td><td>被逮捕多次者在右下角</td><td>依座標設定應在左上角</td></tr><tr><td>525</td><td>年齡是原因變項就算橫列百分比</td><td>在自變項的每一類別內算百分比（本例是直行）</td></tr><tr><td>530</td><td>不一致配對式中的「57」</td><td>應為 53（H 格）</td></tr><tr><td>537</td><td>範例 12.3「標明」第二列「15%／15%」</td><td>應為 15%／85%</td></tr></tbody></table></div>
+<h2 id="s26" class="h1">十、中譯本邊欄名詞</h2>
+<div class="tw"><table><colgroup><col style="width:34.2%"><col style="width:52.6%"><col style="width:13.2%"></colgroup><thead><tr><th scope="col">名詞</th><th scope="col">英文</th><th scope="col">頁碼</th></tr></thead><tbody><tr><td>編碼程序／編碼簿</td><td>coding procedure / codebook</td><td>504</td></tr><tr><td>資料記錄／資料欄位／直接輸入法</td><td>data record / data field / direct-entry method</td><td>505</td></tr><tr><td>可能編碼式清理／列聯式清理</td><td>possible code cleaning / contingency cleaning</td><td>507</td></tr><tr><td>敘述統計／次數分配／直方圖／次數多邊圖</td><td>descriptive statistics / frequency distribution / histogram / frequency polygon</td><td>509</td></tr><tr><td>集中趨勢量數／眾數</td><td>measures of central tendency / mode</td><td>509</td></tr><tr><td>中位數／平均數／常態分配</td><td>median / mean / normal distribution</td><td>511</td></tr><tr><td>偏態分配／全距</td><td>skewed distribution / range</td><td>512</td></tr><tr><td>百分位數／標準差</td><td>percentile / standard deviation</td><td>513</td></tr><tr><td>Z 分數</td><td>z-score</td><td>515</td></tr><tr><td>單變項／雙變項統計、統計關係、共變、統計獨立</td><td>univariate / bivariate statistics, statistical relationship, covariation, statistical independence</td><td>517</td></tr><tr><td>散佈圖</td><td>scattergram</td><td>518</td></tr><tr><td>線性關係／曲線關係</td><td>linear / curvilinear relationship</td><td>520</td></tr><tr><td>列聯表／交叉列表</td><td>contingency table / cross-tabulation</td><td>521</td></tr><tr><td>欄外值</td><td>marginals</td><td>523</td></tr><tr><td>消減誤差比例</td><td>proportionate reduction in error</td><td>528</td></tr><tr><td>控制變項</td><td>control variable</td><td>532</td></tr><tr><td>淨效果／局部表格</td><td>net effect / partials</td><td>534</td></tr><tr><td>詳析典範／複製型態／標明型態</td><td>elaboration paradigm / replication / specification pattern</td><td>535</td></tr><tr><td>闡明型態／解釋型態／抑制變項型態</td><td>interpretation / explanation / suppressor variable pattern</td><td>538</td></tr><tr><td>推論統計</td><td>inferential statistics</td><td>540</td></tr><tr><td>統計顯著性</td><td>statistical significance</td><td>541</td></tr><tr><td>統計顯著水準</td><td>level of statistical significance</td><td>542</td></tr><tr><td>第一類型錯誤／第二類型錯誤</td><td>Type I / Type II error</td><td>544</td></tr></tbody></table></div>
+<h2 id="s27" class="h1">十一、常見誤解</h2>
+<div class="tw"><table><colgroup><col style="width:36.8%"><col style="width:63.2%"></colgroup><thead><tr><th scope="col">誤解</th><th scope="col">其實</th></tr></thead><tbody><tr><td>p &lt; .05 表示有 95% 的機率是真的</td><td>是「如果沒有關係，出現這種結果的機率小於 5%」（第九節）</td></tr><tr><td>顯著就代表重要</td><td>統計顯著 ≠ 實質重要，要報效果量（p. 541）</td></tr><tr><td>沒有顯著就證明沒有差異</td><td>只是未能拒斥虛無假設，可能是樣本太小（第二類型錯誤）</td></tr><tr><td>相關係數接近 0 就是沒有關係</td><td>可能是曲線關係，要先看散佈圖（p. 533）</td></tr><tr><td>卡方越大關聯越強</td><td>卡方會隨樣本數變大，強度要用 Cramér's V</td></tr><tr><td>R² 是預測正確率</td><td>是可解釋的變異比例</td></tr><tr><td>控制後關係消失，就表示原關係是假的</td><td>若控制變項是中介變項，那是闡明，不是虛假（p. 538）</td></tr><tr><td>交叉表哪個方向算百分比都一樣</td><td>方向不同，回答的問題不同；在自變項類別內算才能比較自變項的效果</td></tr><tr><td>統計軟體跑出來的數字就是答案</td><td>軟體不會告訴你假定是否成立，也不會替你詮釋（pp. 546–547）</td></tr></tbody></table></div>
+<h2 id="s28" class="h1">十二、讀完該能回答的問題</h2>
+<ol class="lst"><li><b>編碼簿要寫哪些東西？</b>若你的問卷有反向題與未填答，編碼簿要怎麼寫？</li><li><b>可能編碼式清理與列聯式清理有何不同？</b>各舉一個你問卷中可能出現的錯誤。</li><li><b>名目、順序、區間尺度各能用哪些集中趨勢與離散量數？</b>為什麼偏態時中位數比平均數適合？</li><li><b>在一張自變項放直行的交叉表中，</b>要算哪個方向的百分比？要沿哪個方向比較？</li><li><b>控制變項後關係消失，</b>怎麼判斷是闡明還是解釋？為什麼光看表格判斷不了？</li><li><b>範例 12.4 的 R²＝.38 與收入 β＝−.44，</b>用一句正確的白話各說一次。</li><li><b>p &lt; .05 的正確意思是什麼？</b>顯著水準設得越嚴，會增加哪一類錯誤？</li></ol>
+<h3 id="s29" class="h2">小練習一：讀這張交叉表</h3>
+<div class="tw"><table><colgroup><col style="width:30.3%"><col style="width:23.7%"><col style="width:23.7%"><col style="width:22.4%"></colgroup><thead><tr><th scope="col">是否在課堂使用 AI</th><th scope="col">國小</th><th scope="col">國中</th><th scope="col">高中</th></tr></thead><tbody><tr><td>是</td><td>35%</td><td>62%</td><td>48%</td></tr><tr><td>否</td><td>65%</td><td>38%</td><td>52%</td></tr><tr><td>總數（N）</td><td>100%（80）</td><td>100%（60）</td><td>100%（40）</td></tr></tbody></table></div>
+<p>問：這張表的百分比是在哪個變項的類別內計算的？哪個學制的教師使用比例最高？有人寫「使用 AI 的教師中國中教師最多」，這句話是從這張表讀出來的嗎？（本課改寫的虛構資料）</p>
+<h3 id="s30" class="h2">小練習二：改寫這些句子</h3>
+<div class="tw"><table><colgroup><col style="width:50.0%"><col style="width:50.0%"></colgroup><thead><tr><th scope="col">原句</th><th scope="col">參考改寫</th></tr></thead><tbody><tr><td>「本研究結果 p &lt; .05，表示有 95% 的機率兩者確實相關。」</td><td>（兩者的相關達 .05 顯著水準，r＝…, p＝…）</td></tr><tr><td>「迴歸模型的預測正確率為 38%。」</td><td>（這組自變項可解釋依變項 38% 的變異量）</td></tr><tr><td>「兩組差異未達顯著，證明參加研習沒有效果。」</td><td>（兩組差異未達顯著；考量樣本數有限，無法排除第二類型錯誤）</td></tr><tr><td>「卡方值很大，表示學制與 AI 使用的關聯很強。」</td><td>（兩者關聯達顯著，χ²(df, N)＝…；關聯強度 Cramér's V＝…）</td></tr></tbody></table></div>
+<p class="note">括號內為參考答案。</p>
+<h2 id="s31" class="h1">附：頁碼與來源說明</h2>
+<ul class="lst"><li class="lv1"><b>頁碼：</b><span class="">本課 PDF 為掃描檔，書頁＝PDF 頁＋502；章首頁 p. 503 未印頁碼（由 p. 504 回推）。</span></li><li class="lv1"><b>待核對：</b><span class="">Y 城市例的平均數在算術上不一致（p. 512）；範例 12.1 美國原住民重新編碼的細節；以上未對照英文原書。</span></li><li class="lv1"><b>完整逐頁整理（含每張表的原始數字）：</b><span class="">07-讀本與參考文獻／中文譯本-Neuman當代社會研究法／CH12-量化資料分析-逐頁閱讀整理-前半.md、後半.md。</span></li><li class="lv1"><b>與其他讀本的關係：</b><span class="">因果三判準與虛假關係見「研讀重點-Neuman第6章」；分析單元與區位謬誤見「研讀重點-Babbie第4章」。</span></li></ul>
+  </main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  try{var t=localStorage.getItem('w3-theme');if(t)root.setAttribute('data-theme',t)}catch(e){}
+  document.getElementById('theme').onclick=function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    var nt=dark?'light':'dark';root.setAttribute('data-theme',nt);try{localStorage.setItem('w3-theme',nt)}catch(e){}
+  };
+  document.getElementById('print').onclick=function(){
+    [].forEach.call(document.querySelectorAll('details'),function(d){d.open=true});window.print();
+  };
+  // 寬螢幕展開目錄（手機維持收起）；展開後版面會變，若網址帶 #錨點就重新對齊
+  if(!matchMedia('(max-width:900px)').matches){var tb=document.querySelector('.tocbox');if(tb)tb.open=true}
+  if(location.hash){var el=document.getElementById(location.hash.slice(1));if(el)el.scrollIntoView()}
+  // 複製 prompt
+  [].forEach.call(document.querySelectorAll('.paste'),function(box){
+    var b=box.querySelector('.copy');
+    b.onclick=function(){
+      var txt=[].map.call(box.querySelectorAll('.pb p'),function(p){return p.textContent}).join('\n');
+      function ok(){b.textContent='已複製';b.classList.add('done');setTimeout(function(){b.textContent='複製';b.classList.remove('done')},1600)}
+      function fallback(){var r=document.createRange();r.selectNodeContents(box.querySelector('.pb'));
+        var s=getSelection();s.removeAllRanges();s.addRange(r);
+        try{document.execCommand('copy');ok()}catch(e){b.textContent='已選取，請按 ⌘C'}}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,fallback)}else{fallback()}
+    };
+  });
+  // 複製單一指令
+  [].forEach.call(document.querySelectorAll('.copy1'),function(b){b.onclick=function(){
+    var txt=b.getAttribute('data-t');
+    function ok(){b.textContent='已複製';b.classList.add('done');setTimeout(function(){b.textContent='複製';b.classList.remove('done')},1400)}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){b.textContent='請手動選取'})}else{b.textContent='請手動選取'}
+  }});
+  // 目錄高亮
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(en){if(!en.isIntersecting)return;
+      links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
+    links.forEach(function(a){var el=document.getElementById(a.getAttribute('href').slice(1));if(el)io.observe(el)});
+  }
+
+  // ===== 學習單：彈性填寫欄位（2026-09-22 追加）=====
+  // localStorage 安全存取層：瀏覽器封鎖網站資料時整段不得拋錯（沿用 build_web_v8 的作法）
+  var KEY='neuman-ch12', LS=(function(){
+    var ok=false;try{localStorage.setItem('__t','1');localStorage.removeItem('__t');ok=true}catch(e){}
+    return {ok:ok,
+      get:function(){if(!ok)return{};try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}},
+      set:function(o){if(!ok)return;try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}},
+      del:function(){if(!ok)return;try{localStorage.removeItem(KEY)}catch(e){}}};
+  })();
+  var DB=LS.get(), tmr=null;
+  function save(){clearTimeout(tmr);tmr=setTimeout(function(){LS.set(DB);flash()},250)}
+  var stat=document.getElementById('sstat');
+  function flash(){if(!stat||!LS.ok)return;var o=stat.textContent;stat.textContent='已儲存';
+    clearTimeout(flash.t);flash.t=setTimeout(function(){stat.textContent=o},1100)}
+  var saver=document.querySelector('.saver');
+  if(saver&&!LS.ok){saver.classList.add('off');
+    if(stat)stat.textContent='這個瀏覽器封鎖了網站資料，填寫不會被記住（其他功能不受影響）。列印或另存前請先確認內容還在。';
+    var cb=document.getElementById('clearall');if(cb)cb.disabled=true}
+
+  function grow(el){el.style.height='auto';el.style.height=(el.scrollHeight+2)+'px'}
+  function growAll(){[].forEach.call(document.querySelectorAll('textarea'),grow)}
+
+  // 文字欄位：還原 → 自動長高 → 輸入即存
+  [].forEach.call(document.querySelectorAll('textarea.fin'),function(el){
+    var k=el.getAttribute('data-k');if(DB[k])el.value=DB[k];grow(el);
+    el.addEventListener('input',function(){grow(el);DB[k]=el.value;if(!el.value)delete DB[k];save()});
+  });
+  // 勾選框
+  [].forEach.call(document.querySelectorAll('input[type=checkbox][data-k]'),function(el){
+    var k=el.getAttribute('data-k');if(DB[k])el.checked=true;
+    el.addEventListener('change',function(){if(el.checked){DB[k]=1}else{delete DB[k]}save()});
+  });
+  // 評量格：點一下循環 v → △ → × → 空白
+  var CYC=['v','△','×'];
+  [].forEach.call(document.querySelectorAll('.rb'),function(b){
+    var k=b.getAttribute('data-k');
+    function paint(v){if(v){b.textContent=v;b.setAttribute('data-v',v)}else{b.textContent='·';b.removeAttribute('data-v')}}
+    paint(DB[k]);
+    b.onclick=function(){var i=CYC.indexOf(DB[k]||'');var nv=CYC[i+1]||'';
+      if(nv){DB[k]=nv}else{delete DB[k]}paint(nv);save()};
+  });
+  // 可增減列數的表格
+  [].forEach.call(document.querySelectorAll('.rep'),function(rep){
+    var k=rep.getAttribute('data-k'), nc=+rep.getAttribute('data-cols');
+    var tb=rep.querySelector('tbody');
+    var heads=[].map.call(rep.querySelectorAll('thead th'),function(th){
+      return th.textContent.replace(/"/g,'&quot;')}).slice(0,nc);
+    function cells(row,vals){
+      var h='';for(var c=0;c<nc;c++){h+='<td data-l="'+heads[c]+'"><textarea rows="1" data-c="'+c+'">'+
+        ((vals&&vals[c]?vals[c]:'').replace(/[&<>]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m]}))+'</textarea></td>'}
+      return h+'<td class="rmc"><button type="button" class="rm" aria-label="刪除這一列">✕</button></td>';
+    }
+    function collect(){
+      DB[k]=[].map.call(tb.rows,function(tr){return [].map.call(tr.querySelectorAll('textarea'),function(x){return x.value})});
+      if(!DB[k].some(function(r){return r.some(function(v){return v})}))delete DB[k];
+      save();
+    }
+    function addRow(vals){
+      var tr=tb.insertRow(-1);tr.innerHTML=cells(tr,vals);
+      [].forEach.call(tr.querySelectorAll('textarea'),function(x){grow(x);
+        x.addEventListener('input',function(){grow(x);collect()})});
+      tr.querySelector('.rm').onclick=function(){
+        if(tb.rows.length<=1){[].forEach.call(tr.querySelectorAll('textarea'),function(x){x.value='';grow(x)})}
+        else{tr.parentNode.removeChild(tr)}collect()};
+      return tr;
+    }
+    var saved=DB[k];
+    if(saved&&saved.length){saved.forEach(function(r){addRow(r)})}
+    else{for(var i=0;i<(+rep.getAttribute('data-start')||3);i++)addRow(null)}
+    rep.querySelector('.addr').onclick=function(){var tr=addRow(null);var f=tr.querySelector('textarea');if(f)f.focus()};
+  });
+  // 抽狀況卡
+  var draw=document.getElementById('draw');
+  if(draw){draw.onclick=function(){
+    var cs=[].slice.call(document.querySelectorAll('.card'));if(!cs.length)return;
+    var i=Math.floor(Math.random()*cs.length);
+    cs.forEach(function(c,j){c.classList.toggle('hit',j===i)});
+    var out=document.getElementById('drawout');
+    if(out)out.textContent='抽到 '+cs[i].querySelector('.cno').textContent+'　'+cs[i].querySelector('.ct').textContent;
+    cs[i].scrollIntoView({block:'nearest',behavior:'smooth'});
+  }}
+  // 清除
+  var clr=document.getElementById('clearall');
+  if(clr)clr.onclick=function(){
+    if(!confirm('清除這一頁所有填寫內容？此動作無法復原。'))return;
+    DB={};LS.del();
+    [].forEach.call(document.querySelectorAll('textarea'),function(x){x.value='';grow(x)});
+    [].forEach.call(document.querySelectorAll('input[type=checkbox][data-k]'),function(x){x.checked=false});
+    [].forEach.call(document.querySelectorAll('.rb'),function(b){b.textContent='·';b.removeAttribute('data-v')});
+    if(stat)stat.textContent='已清除';
+  };
+  // 字型載入後行高會變，重算一次高度；列印前也重算
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(growAll);
+  addEventListener('load',growAll);addEventListener('beforeprint',growAll);
+})();
+</script>
+</body>
+</html>

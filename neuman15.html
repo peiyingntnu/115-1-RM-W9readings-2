@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Neuman 第 15 章研讀重點</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --ground:#F4F6FA; --paper:#FFFFFF; --ink:#1F2E4A; --title:#17365D; --mute:#5E6E85; --line:#DCE3EE;
+  --zebra:#F5F7FB; --acc:#0E7C74; --acc-soft:#E1F3F1; --navy:#1F3864;
+  --paste:#EFF4FB; --paste-line:#C9D7EC; --warn:#FFF3DF; --warn-line:#F0C98A; --warn-ink:#7A4A00;
+  --goal:#1E6B4F; --ok:#1E6B4F; --ok-bg:#E4F1EA; --bad:#A02020; --bad-bg:#FAE9E9;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D131D; --paper:#141C28; --ink:#D6DFEC; --title:#EEF3FA; --mute:#95A5BA; --line:#2A3647;
+    --zebra:#172131; --acc:#5CC9BD; --acc-soft:#16302E; --navy:#9DBBE6;
+    --paste:#16233A; --paste-line:#2E4468; --warn:#34290F; --warn-line:#6B5220; --warn-ink:#F3D493;
+    --goal:#7FD3AA; --ok:#7FD3AA; --ok-bg:#16302E; --bad:#F2A0A0; --bad-bg:#3A1C1C;
+  color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D131D; --paper:#141C28; --ink:#D6DFEC; --title:#EEF3FA; --mute:#95A5BA; --line:#2A3647;
+  --zebra:#172131; --acc:#5CC9BD; --acc-soft:#16302E; --navy:#9DBBE6;
+  --paste:#16233A; --paste-line:#2E4468; --warn:#34290F; --warn-line:#6B5220; --warn-ink:#F3D493;
+  --goal:#7FD3AA; --ok:#7FD3AA; --ok-bg:#16302E; --bad:#F2A0A0; --bad-bg:#3A1C1C;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:64px}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+a{color:var(--acc)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #F2B705;outline-offset:2px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--ground) 92%,transparent);
+  backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.topin{max-width:1180px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.crumb{font-size:14px;color:var(--mute)}
+.sp{flex:1}
+.top button,.top .lk{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:3px 11px;font-size:14px;
+  text-decoration:none;color:var(--ink)}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:24px 60px;display:grid;
+  grid-template-columns:250px minmax(0,1fr);gap:32px;align-items:start}
+.side{position:sticky;top:70px;max-height:calc(100dvh - 90px);overflow:auto}
+.tocbox summary{font-weight:700;color:var(--title);cursor:pointer;margin-bottom:6px}
+.toc{list-style:none;margin:0;padding:0;font-size:14px;line-height:1.5}
+.toc li{margin:0}
+.toc a{display:block;color:var(--mute);text-decoration:none;padding:4px 10px;border-left:2px solid transparent}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:var(--acc);border-left-color:var(--acc);font-weight:700}
+.toc .t1 a{color:var(--ink);font-weight:700;margin-top:8px}
+.toc .t2 a{padding-left:22px;font-size:13px}
+.doc{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:36px clamp(18px,4vw,52px) 52px;min-width:0}
+.dh{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:8px}
+.eyebrow{font-size:13px;letter-spacing:.06em;color:var(--acc);font-weight:700}
+.dh h1{margin:6px 0 8px;font-size:clamp(24px,3.4vw,32px);line-height:1.3;color:var(--title);font-weight:900;text-wrap:balance}
+.subl{margin:0;color:var(--mute);font-size:14px}
+.h1{font-size:22px;color:var(--title);margin:42px 0 12px;padding-top:14px;border-top:3px solid var(--navy);font-weight:900}
+.h2{font-size:18px;color:var(--title);margin:28px 0 8px;display:flex;align-items:center;gap:10px;font-weight:700;text-wrap:balance}
+.qtag{background:var(--q);color:#fff;font-size:13px;font-weight:900;border-radius:999px;padding:1px 10px;flex:none}
+p{margin:8px 0;max-width:68ch}
+.note{font-size:14px;color:var(--mute)}
+.goal{background:var(--acc-soft);border-radius:10px;padding:10px 14px;color:var(--goal);max-width:none}
+.goal b{margin-right:10px}
+.lst{margin:8px 0;padding-left:1.4em;max-width:72ch}
+.lst li{margin:4px 0}
+.lst .lv2{list-style:circle;margin-left:1.4em;color:var(--ink)}
+.lst li b{color:var(--title)}
+.dim{color:var(--mute)}
+.paste{border:1px solid var(--paste-line);background:var(--paste);border-radius:12px;margin:14px 0;overflow:hidden}
+.ph{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--paste-line);font-size:13px;font-weight:700;color:var(--navy)}
+.ph span{flex:1}
+.copy{border:1px solid var(--paste-line);background:var(--paper);border-radius:7px;padding:2px 12px;font-size:13px}
+.copy.done{color:var(--acc);border-color:var(--acc)}
+.pb{padding:10px 16px 12px;font-size:15px}
+.pb p{margin:4px 0;max-width:none}
+.warn{background:var(--warn);border:1px solid var(--warn-line);border-radius:12px;padding:10px 16px;margin:14px 0;color:var(--warn-ink)}
+.warn p{max-width:none}
+.wh{font-weight:700}
+.tw{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;min-width:560px}
+th{background:var(--navy);color:#fff;text-align:left;padding:8px 10px;font-weight:700}
+:root[data-theme="dark"] th{color:#0D131D}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) th{color:#0D131D}}
+td{padding:7px 10px;border-top:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even) td{background:var(--zebra)}
+.blank{display:block;min-height:2.6em}
+.cap{font-weight:700;color:var(--title)}
+.fold{border:1px dashed var(--acc);border-radius:12px;margin:18px 0;padding:0 16px}
+.fold summary{cursor:pointer;padding:10px 0;font-weight:700;color:var(--acc)}
+.fold[open]{padding-bottom:10px}
+.triple{list-style:none;margin:14px 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.trow{display:grid;grid-template-columns:44px 1fr 1.9fr 1.2fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper)}
+.tno{background:var(--acc-soft);color:var(--acc);font-weight:900;font-size:15px;display:flex;align-items:flex-start;justify-content:center;padding-top:14px}
+.tc{padding:10px 14px;border-left:1px solid var(--line);min-width:0}
+.tc p{margin:4px 0;max-width:none;font-size:15px}
+.tl{display:block;font-size:12px;letter-spacing:.06em;color:var(--mute);font-weight:700;margin-bottom:2px}
+.tc.ai{background:var(--zebra)}
+.tin{margin:4px 0 0}
+.tin.paste{margin:4px 0 0}
+.tin .ph{padding:5px 10px}
+.tin .pb{padding:6px 12px 8px;font-size:14.5px}
+.tin.self{border:1px dashed var(--line);border-radius:10px;padding:6px 10px}
+.tin.self .pb{padding:4px 0 0}
+.verb{background:var(--navy);color:var(--paper);border-radius:6px;padding:1px 9px;font-size:13px;font-weight:700;flex:none}
+.noai{margin-left:8px;font-size:12px;color:var(--warn-ink);background:var(--warn);border-radius:999px;padding:1px 9px}
+.ph .verb{flex:none}
+.ph .verb+span{flex:1}
+.cmd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:2px 0 6px}
+.cmd .tl{margin:0}
+.cmd code{font-family:inherit;font-weight:700;background:var(--acc-soft);color:var(--acc);border-radius:8px;padding:2px 10px;font-size:15px}
+.copy1{border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:1px 10px;font-size:13px}
+.copy1.done{color:var(--acc);border-color:var(--acc)}
+.or{font-size:12px;color:var(--mute)}
+@media (max-width:1180px) and (min-width:761px){
+  .trow{grid-template-columns:44px 1fr 1fr}
+  .tno{grid-row:1/3}
+  .tc.need{grid-column:2;grid-row:1}
+  .tc.ai{grid-column:3;grid-row:1}
+  .tc.inp{grid-column:2/4;grid-row:2;border-top:1px solid var(--line)}
+}
+@media (max-width:760px){
+  .trow{grid-template-columns:1fr}
+  .tno{justify-content:flex-start;padding:8px 14px}
+  .tc{border-left:0;border-top:1px solid var(--line)}
+}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:14px}
+  .side{position:static;max-height:none}
+  .tocbox:not([open]){margin-bottom:0}
+}
+@media print{
+  .top,.side{display:none} .wrap{display:block;padding:0} .doc{border:0;padding:0}
+  details.fold{border:0} details.fold>*{display:block}
+  .copy{display:none}
+}
+
+/* ===== 學習單：彈性填寫欄位（2026-09-22 追加） ===== */
+.saver{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--acc-soft);
+  border:1px solid var(--acc);border-radius:12px;padding:9px 14px;margin:14px 0;font-size:.86rem;color:var(--ink)}
+.saver .sdot{width:9px;height:9px;border-radius:50%;background:var(--acc);flex:none}
+.saver.off{background:var(--warn);border-color:var(--warn-line);color:var(--warn-ink)}
+.saver.off .sdot{background:var(--warn-line)}
+.saver button{margin-left:auto;font:inherit;padding:4px 12px;border:1px solid var(--line);
+  border-radius:999px;background:var(--paper);color:var(--ink);cursor:pointer}
+.saver button:disabled{opacity:.45;cursor:not-allowed}
+.fld{margin:14px 0}
+.fh{margin:0 0 6px;font-weight:700;color:var(--title);font-size:.95rem;display:flex;
+  gap:8px;align-items:baseline;flex-wrap:wrap}
+.fhint{font-weight:400;font-size:.84rem;color:var(--mute)}
+.fin{display:block;width:100%;box-sizing:border-box;font:inherit;line-height:1.75;
+  color:var(--ink);background:var(--paste);border:1px solid var(--paste-line);border-radius:10px;
+  padding:10px 13px;resize:none;overflow:hidden;min-height:3.2em}
+.fin:focus{outline:2px solid var(--acc);outline-offset:1px;background:var(--paper)}
+.fin::placeholder{color:var(--mute);opacity:.65}
+.chk .cl{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.chk .cl li{margin:0}
+.chk label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;background:var(--zebra);
+  border:1px solid var(--line);border-radius:10px;padding:9px 13px}
+.chk input{margin:.28em 0 0;width:17px;height:17px;flex:none;accent-color:var(--acc)}
+.chk input:checked+span{color:var(--mute);text-decoration:line-through}
+.chk i{display:block;font-style:normal;font-size:.85rem;color:var(--mute);margin-top:2px;text-decoration:none}
+table.rt thead th{word-break:keep-all;font-size:.82rem;line-height:1.45}
+table.rt td.rc{padding:0;text-align:center}
+table.rt .rb{width:100%;min-height:42px;font:inherit;font-size:1.12rem;font-weight:700;border:0;
+  background:none;color:var(--mute);cursor:pointer}
+table.rt .rb[data-v="v"]{color:var(--ok);background:var(--ok-bg)}
+table.rt .rb[data-v="△"]{color:var(--warn-ink);background:var(--warn)}
+table.rt .rb[data-v="×"]{color:var(--bad);background:var(--bad-bg)}
+table.rt tbody th{background:var(--zebra);color:var(--title);text-align:left;white-space:nowrap}
+.rk{font-weight:400;color:var(--mute);font-size:.84rem;margin:0 0 6px}
+.cardwrap{margin:14px 0}
+.drawb{font:inherit;font-weight:700;padding:9px 18px;border-radius:999px;border:1px solid var(--acc);
+  background:var(--acc);color:#fff;cursor:pointer}
+.drawout{margin-left:10px;font-weight:700;color:var(--title)}
+.cards{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(248px,1fr))}
+.card{margin:0;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;
+  padding:12px 15px;background:var(--paper);transition:box-shadow .2s,transform .2s;
+  display:flex;flex-direction:column}
+.card.hit{box-shadow:0 0 0 3px var(--c);transform:translateY(-2px)}
+.card .cno{margin:0;font-size:1.5rem;font-weight:900;color:var(--c);line-height:1}
+.card .ct{margin:2px 0 2px;font-weight:700;color:var(--title)}
+.card .cn{margin:0 0 8px;font-size:.84rem;color:var(--mute)}
+.card .cl{margin:0 0 4px;font-size:.8rem;font-weight:700;color:var(--c);letter-spacing:.04em}
+.card ul{margin:0;padding-left:1.1em;font-size:.89rem}
+.card ul li{margin:3px 0}
+.cdone{display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:9px;
+  border-top:1px dashed var(--line);font-size:.85rem;cursor:pointer;color:var(--mute)}
+.cdone input{width:16px;height:16px;accent-color:var(--acc)}
+.rep{margin:4px 0 14px}
+table.rtb td{padding:0;vertical-align:top}
+table.rtb td textarea{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:.92rem;
+  line-height:1.65;border:0;background:none;color:var(--ink);padding:8px 10px;resize:none;
+  overflow:hidden;min-height:2.6em}
+table.rtb td textarea:focus{outline:2px solid var(--acc);outline-offset:-2px;background:var(--paper)}
+table.rtb .rmh,table.rtb .rmc{width:34px;text-align:center}
+table.rtb .rm{font:inherit;border:0;background:none;color:var(--mute);cursor:pointer;
+  font-size:1.05rem;line-height:1;padding:6px}
+table.rtb .rm:hover{color:var(--bad)}
+.addr{font:inherit;font-size:.88rem;margin-top:8px;padding:6px 14px;border-radius:999px;
+  border:1px dashed var(--acc);background:none;color:var(--acc);cursor:pointer}
+
+
+.pl{margin:10px 0}
+.inl{color:var(--acc);font-weight:700;text-decoration:none;border-bottom:2px solid var(--acc-soft)}
+.inl:hover{border-bottom-color:var(--acc)}
+/* 評量表：橫向捲動時左欄跟著留在畫面上，才知道自己在填哪一列 */
+table.rt tbody th{position:sticky;left:0;z-index:1;box-shadow:1px 0 0 var(--line)}
+/* 可增減表格：窄螢幕改為一列一張卡，欄名變成欄位上方的標籤（手機打字才不用左右捲） */
+@media (max-width:700px){
+  .rep .tw{overflow:visible}
+  .rep table.rtb,.rep table.rtb tbody,.rep table.rtb tr,.rep table.rtb td{display:block;width:auto;
+    min-width:0}   /* 蓋掉基礎 table{min-width:560px}，否則堆疊後仍會撐出橫向捲動 */
+  .rep table.rtb thead{display:none}
+  .rep table.rtb tr{position:relative;border:1px solid var(--line);border-radius:10px;
+    background:var(--zebra);padding:8px 10px 6px;margin:0 0 10px}
+  .rep table.rtb td{border:0;padding:0 0 7px}
+  .rep table.rtb td::before{content:attr(data-l);display:block;font-size:.78rem;font-weight:700;
+    color:var(--mute);margin:0 0 2px}
+  .rep table.rtb td textarea{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+  .rep table.rtb td.rmc{position:absolute;top:4px;right:4px;width:auto;padding:0}
+  .rep table.rtb td.rmc::before{content:none}
+}
+@media print{
+  .saver,.drawb,.drawout,.addr,.rm,.rmh,.rmc{display:none!important}
+  .fin,table.rtb td textarea{background:none;border-color:#999;
+    background-image:repeating-linear-gradient(transparent,transparent 1.74em,#CBD2DE 1.74em,#CBD2DE calc(1.74em + 1px))}
+  .fin{min-height:5.3em}
+  .card{break-inside:avoid;border-color:#999}
+  .card.hit{box-shadow:none}
+  table.rt .rb{color:#333}
+}
+</style>
+</head>
+<body>
+<div class="top"><div class="topin"><a class="lk" href="index.html">← 讀本目錄</a><span class="crumb">學生用｜研讀重點</span>
+<span class="sp"></span><button type="button" id="theme" aria-label="切換深淺色">◐</button>
+<button type="button" id="print">列印</button></div></div>
+<div class="wrap">
+  <aside class="side"><details class="tocbox"><summary>目錄</summary><ol class="toc"><li class="t1"><a href="#s1">零、這一章在回答什麼</a></li><li class="t2"><a href="#s2">閱讀地圖</a></li><li class="t1"><a href="#s3">一、質化與量化資料分析的比較（pp. 670–673）</a></li><li class="t1"><a href="#s4">二、概念形成與三階段編碼（pp. 673–680）★★</a></li><li class="t2"><a href="#s5">資訊箱 15.1　一個完整的編碼有五個部分（p. 676）</a></li><li class="t2"><a href="#s6">資訊箱 15.2　編碼系統是慢慢長出來的（p. 678）</a></li><li class="t1"><a href="#s7">三、分析備忘錄與表面事實（pp. 680–683）</a></li><li class="t2"><a href="#s8">資訊箱 15.3　寫分析備忘錄的十條建議（p. 682）</a></li><li class="t2"><a href="#s9">表面事實（pp. 681–683）</a></li><li class="t1"><a href="#s10">四、七種分析策略（pp. 683–703）</a></li><li class="t2"><a href="#s11">1. 理想型（pp. 684–686）</a></li><li class="t2"><a href="#s12">2. 漸次接近（p. 686）</a></li><li class="t2"><a href="#s13">3. 舉例法（pp. 686–687）</a></li><li class="t2"><a href="#s14">4. 領域分析（pp. 687–691）</a></li><li class="t2"><a href="#s15">5. 分析比較（pp. 690–693）</a></li><li class="t2"><a href="#s16">6. 敘事分析（pp. 692–699）</a></li><li class="t2"><a href="#s17">7. 反面個案方法（pp. 699–703）★</a></li><li class="t1"><a href="#s18">五、其他技術（pp. 703–707）</a></li><li class="t1"><a href="#s19">六、質化分析軟體、QCA 與事件結構分析（pp. 707–713）</a></li><li class="t1"><a href="#s20">七、結論（pp. 712–713）</a></li><li class="t1"><a href="#s21">八、譯本與方法學提醒一覽</a></li><li class="t1"><a href="#s22">九、中譯本邊欄名詞</a></li><li class="t1"><a href="#s23">十、常見誤解</a></li><li class="t1"><a href="#s24">十一、讀完該能回答的問題</a></li><li class="t2"><a href="#s25">小練習一：為你的一個碼寫出五個部分</a></li><li class="t2"><a href="#s26">小練習二：這個研究適合哪一種分析策略？</a></li><li class="t1"><a href="#s27">附：頁碼與來源說明</a></li></ol></details></aside>
+  <main class="doc">
+    <header class="dh"><span class="eyebrow">115-1 教育與社會科學研究法｜Neuman 第 15 章</span><h1>Neuman 第 15 章「質化資料分析」研讀重點</h1><p class="subl">Neuman《當代社會研究法：質化與量化取向》中譯本（王佳煌等譯，2014）第 15 章（書頁 pp. 669–716）｜115-1 教育與社會科學研究法</p></header>
+<p class="note">本講義以轉述為主，不取代原書；頁碼一律為中譯本書頁（本課 PDF 第 1 頁＝書頁 669，PDF 頁＋668＝書頁）。標「教育例」與「寫進論文」的段落是本課的延伸，不是原書內容。</p>
+<p class="note">譯名提醒：本章同一個策略有兩種譯法——理想型＝理念型（ideal type）、漸次接近＝連續接近（successive approximation）、舉例法＝例證法（illustrative method）、反面個案＝負面個案。本講義用前者（與譯本一致），括號附通行譯法。</p>
+<h2 id="s1" class="h1">零、這一章在回答什麼</h2>
+<p>一句話：訪談逐字稿、觀察筆記、文件堆在一起之後，怎麼有系統地從裡面長出概念、主題與解釋。Neuman 的答案分三層：先編碼與寫備忘錄（幾乎所有質性研究都會做），再選一種或幾種分析策略，最後用圖表等技術把模式看清楚、講清楚。</p>
+<p>Neuman 開頭提醒：二十年前，質性研究最常被批評的就是「分析過程說不清楚、無法公開檢驗」（p. 670）。這正是論文第三章「資料分析」一節要解決的問題——把你的分析步驟寫到別人看得懂、查得到。</p>
+<h3 id="s2" class="h2">閱讀地圖</h3>
+<div class="tw"><table><colgroup><col style="width:30.3%"><col style="width:11.8%"><col style="width:19.7%"><col style="width:38.2%"></colgroup><thead><tr><th scope="col">節</th><th scope="col">頁碼</th><th scope="col">優先度</th><th scope="col">一句話重點</th></tr></thead><tbody><tr><td>質化與量化分析的比較</td><td>670–673</td><td>必讀</td><td>四同四異；以「排除」建立解釋的可信度</td></tr><tr><td>概念形成與三階段編碼</td><td>673–680</td><td>必讀 ★★</td><td>開放式、主軸式、選擇性編碼；編碼的五個部分</td></tr><tr><td>分析備忘錄</td><td>680–682</td><td>必讀 ★</td><td>十條撰寫守則；好備忘錄可以直接改寫進報告</td></tr><tr><td>表面事實</td><td>681–683</td><td>略讀</td><td>看得到的只是露出地表的部分</td></tr><tr><td>七種分析策略（總覽）</td><td>683–685</td><td>必讀</td><td>圖 15.3：報告裡的資料已經轉化兩次</td></tr><tr><td>理想型、漸次接近、舉例法</td><td>684–687</td><td>必讀</td><td>漸次接近是所有質性分析的共通邏輯</td></tr><tr><td>領域分析</td><td>687–691</td><td>略讀（民族誌必讀）</td><td>表面詞彙、內含詞彙、語意關係</td></tr><tr><td>分析比較</td><td>690–693</td><td>多個案研究必讀</td><td>一致法、差異法、真值表</td></tr><tr><td>敘事分析</td><td>692–699</td><td>必讀（定義）</td><td>路徑相依、時期劃分、關鍵時刻</td></tr><tr><td>反面個案方法</td><td>699–703</td><td>必讀 ★</td><td>資訊箱 15.7 七種反面證據；圖 15.4 七種策略總覽</td></tr><tr><td>其他技術</td><td>703–707</td><td>略讀</td><td>網絡、時間分配、流程圖、多重分類、圖表、地圖</td></tr><tr><td>質化分析軟體、QCA、事件結構分析</td><td>707–713</td><td>必讀（軟體部分）</td><td>軟體管理資料，判斷仍是研究者的事</td></tr><tr><td>結論、複習題、注解</td><td>712–715</td><td>複習用</td><td>分析品質來自反覆閱讀、編碼與備忘錄</td></tr></tbody></table></div>
+<h2 id="s3" class="h1">一、質化與量化資料分析的比較（pp. 670–673）</h2>
+<p class="cap">重點摘要 15.1　量化與質化資料分析的比較（p. 672）</p><div class="tw"><table><colgroup><col style="width:46.1%"><col style="width:53.9%"></colgroup><thead><tr><th scope="col">相似處</th><th scope="col">相異處（量化／質化）</th></tr></thead><tbody><tr><td>都從實徵資料推論到抽象觀念</td><td>標準化技術／各自不同、非標準化的技術</td></tr><tr><td>都公開分析過程、接受檢驗</td><td>資料蒐集完才分析／蒐集時就開始分析，早期結果引導後續蒐集</td></tr><tr><td>都重視比較</td><td>考驗既有的理論與假設／形成概念、建立新理論</td></tr><tr><td>都極力避免錯誤的結論</td><td>精確、抽象的數字／較不精確、分散、貼近脈絡的文字</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>適當性與飽和（p. 670）：</b><span class="">量化的適當性看資料數量；質化看主題的數目，資料充分、不再出現新主題時就達到飽和（Morse, 1994）。</span></li><li class="lv1"><b>以「排除」建立可信度（p. 673）：</b><span class="">資料可能支持不只一種解釋，但不是每一種都與資料一致。提出證據顯示某些解釋與大量證據矛盾，就能把它們排除，提高其他解釋的可信度。</span></li><li class="lv1"><b>一定要說清楚概念（p. 673）：</b><span class="">只描述、不交代理論概念，讀者會用自己的常識去讀，而常識可能夾帶未經檢驗的偏見。</span></li><li class="lv1"><b>教育例：</b><span class="">訪第一位教師時發現「用 AI 備課反而更花時間」，於是在第二、三位的訪談加問——這就是「分析與蒐集交錯」。</span></li></ul>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：交代分析從何時開始（是否邊蒐集邊分析）、用什麼標準判斷飽和。</p><p>第四章：提出主要詮釋時，說明排除了哪些替代解釋、依據什麼證據，而不是只列支持的引句。</p></div>
+<h2 id="s4" class="h1">二、概念形成與三階段編碼（pp. 673–680）★★</h2>
+<p>量化研究在測量之前就定義好變項；質化研究則在分析中形成概念。質化編碼是把原始資料組織成概念類別、創造主題——它不是整理資料的文書工作，而是分析本身（p. 674）。Strauss（1987）建議把資料讀三遍，每遍用一種編碼。</p>
+<div class="tw"><table><colgroup><col style="width:19.7%"><col style="width:28.9%"><col style="width:26.3%"><col style="width:25.0%"></colgroup><thead><tr><th scope="col">階段</th><th scope="col">在做什麼</th><th scope="col">書中例子</th><th scope="col">教育例（教師用 AI 備課）</th></tr></thead><tbody><tr><td>開放式編碼（pp. 674–677）</td><td>第一遍：慢讀資料，在邊緣寫下初步標籤；對新主題保持開放。結束後把所有主題列成清單</td><td>LeMasters 的勞工酒吧研究，大量對話被標為「婚姻」；作者研究勞工騎士團時意外出現「禁酒」類別</td><td>逐段標出「省時」「查證負擔」「怕學生也用」「校內沒規範」；「備課反而變長」是意外的類別</td></tr><tr><td>主軸式編碼（pp. 677–679）</td><td>第二遍：重點放在已有的編碼。把概念切成次類別、合併成更大的構念、找出條件、原因與結果</td><td>婚姻細分為訂婚、婚禮，再連到性別與家務分工；Graneheim 與 Lundman 整理成 6 個次類別、3 個類別</td><td>「查證負擔」細分為查事實、查出處、查是否合課綱；問在什麼條件下負擔最重</td></tr><tr><td>選擇性編碼（pp. 679–680）</td><td>最後一遍：主要主題已確定，回頭瀏覽全部資料，找能說明主題的個案並比較</td><td>LeMasters 以性別關係為主題，比較男女談約會、婚姻、離婚的差異</td><td>以「專業判斷的位移」為核心主題，比較新手與資深教師</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>編碼可以多細？</b><span class="">逐行、逐句、逐段都可以，看研究問題與資料豐富度而定；與研究問題無關的段落可以暫不編碼（p. 677）。</span></li><li class="lv1"><b>主軸編碼的效果（p. 679）：</b><span class="">在多處找到同一主題的證據，形成綿密的支持網絡，類似量化研究的多重指標。</span></li></ul>
+<p class="note">與紮根理論的差異：Neuman 把選擇性編碼描述成「回頭挑選能說明主題的資料」。在 Strauss 與 Corbin 的紮根理論中，選擇性編碼的重點是選定一個核心類別，把其他類別整合在它周圍形成理論故事線。如果論文宣稱採用紮根理論，第三章應引用 Strauss 與 Corbin 原書的定義。</p>
+<p class="note">譯本 p. 674 有一句寫「對質化資料編碼時，要把變項量數安排成機器可讀的格式」，依上下文應是在說「量化」資料編碼，疑為譯誤。</p>
+<h3 id="s5" class="h2">資訊箱 15.1　一個完整的編碼有五個部分（p. 676）</h3>
+<div class="tw"><table><colgroup><col style="width:15.8%"><col style="width:21.1%"><col style="width:30.3%"><col style="width:32.9%"></colgroup><thead><tr><th scope="col">部分</th><th scope="col">意思</th><th scope="col">書中例子：「性別角色爭議」</th><th scope="col">教育例：「查證負擔」</th></tr></thead><tbody><tr><td>標籤</td><td>一到三個字的名稱</td><td>性別角色爭議</td><td>查證負擔</td></tr><tr><td>定義</td><td>這個碼的主要特徵</td><td>兩性互動時，關於男女應有行為的口頭爭論</td><td>教師為確認 AI 產出內容正確或可用而額外付出的工作</td></tr><tr><td>旗幟</td><td>在資料裡怎麼認出它</td><td>說出諷刺、笑話，或對男女應有行為起爭論</td><td>提到「要再確認」「不敢直接用」「去查原文」</td></tr><tr><td>納入與排除條件</td><td>什麼算、什麼不算</td><td>只計同性別者之間的爭論</td><td>只談學生使用 AI 時不算</td></tr><tr><td>範例</td><td>一段資料示例</td><td>「當然是他付錢囉！」「當然？」</td><td>一段經去識別化的受訪者引句</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>三種要避免的錯誤（p. 676）：</b><span class="">只停在描述、沒進到分析；把編碼當機械程序；用僵硬、不能修改的編碼。</span></li></ul>
+<h3 id="s6" class="h2">資訊箱 15.2　編碼系統是慢慢長出來的（p. 678）</h3>
+<p>Weston 等人（2001）六人團隊研究大學教學品質：一開始只有 4 個碼，團隊各自試編、開會討論、修改，數月後變成 34 個，兩年後成為四層、58 個碼的系統，四年、數百小時的討論後才穩定。要表達的是：編碼系統本身就是一套詮釋結構，它會在分析中反覆修正。</p>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：依三階段寫出分析程序，並附一張編碼簿範例表（用上面的五欄格式）；若有協同編碼，寫明編碼系統如何演變（初版幾個碼、定版幾層幾個碼）。</p><p>第四章：以主軸或選擇性編碼得到的類別架構當章節骨架；每個主題給定義與多處證據。</p><p>用 MAXQDA 時，「代碼系統」就是編碼簿，代碼的 memo 可以放定義、旗幟與納入排除條件（參見本課的 MAXQDA 新手上路 SOP）。</p></div>
+<h2 id="s7" class="h1">三、分析備忘錄與表面事實（pp. 680–683）</h2>
+<p>分析備忘錄是寫給自己看、關於編碼與概念的想法。每個主題或概念都可以是一份備忘錄；它把具體資料連到抽象的理論思考，品質好的備忘錄改寫後往往可以直接成為報告的一部分（p. 680）。</p>
+<ul class="lst"><li class="lv1"><b>圖 15.1（p. 681）三種檔案分開放：</b><span class="">資料筆記依日期或來源歸檔；分析備忘錄依概念或主題歸檔；其他檔案依用途歸檔。三者最後都匯入報告。</span></li></ul>
+<h3 id="s8" class="h2">資訊箱 15.3　寫分析備忘錄的十條建議（p. 682）</h3>
+<ol class="lst"><li><b>開始蒐集資料後不久就寫，</b>直到報告完成都不要停。</li><li><b>每一筆加日期，</b>才看得出思考如何演進。</li><li><b>有靈感就先停下編碼，</b>把想法寫下來。</li><li><b>定期重讀，</b>比較談論類似編碼的內容，看能否合併或釐清差異。</li><li><b>每個概念或主題各一份檔案，</b>便於整理重組。</li><li><b>備忘錄與資料筆記分開保存：</b>資料是證據，備忘錄是概念性、建立理論的。</li><li><b>在備忘錄中參照其他概念，</b>記下異同與因果關係。</li><li><b>同時想到兩件事，</b>就分寫兩份備忘錄。</li><li><b>某份備忘錄已沒有新資料可加，</b>就註明「已飽和」。</li><li><b>為備忘錄建立標籤清單，</b>整理時同步更新。</li></ol>
+<h3 id="s9" class="h2">表面事實（pp. 681–683）</h3>
+<p>借地質學的「露頭」：我們觀察得到的只是露出地表的部分，底下還有看不見的社會結構（圖 15.2）。看不到兩人相愛，只看到親吻；看不到社會階級，只看到職業與財產的差異。</p>
+<ul class="lst"><li class="lv1"><b>教育例：</b><span class="">「老師都用 AI 出考卷」是表面事實；底層可能是學校的評量文化或工作負荷結構。</span></li></ul>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：說明備忘錄怎麼寫、怎麼歸檔、怎麼用來判斷飽和（第 9 條）。</p><p>第四章：把受訪者說法（表面事實）和你推論的底層結構分開寫，不要把受訪者的話直接當結論。</p></div>
+<h2 id="s10" class="h1">四、七種分析策略（pp. 683–703）</h2>
+<p>多數質性研究都會編碼、寫備忘錄；在這之上，Neuman 介紹七種分析策略，可以只用一種，也可以合用（p. 683）。圖 15.3（p. 685）提醒：研究者的親身經驗是資料 1，田野筆記與逐字稿是資料 2，報告裡經選擇處理的才是資料 3——報告中的資料已轉化了兩次。</p>
+<p class="cap">七種分析策略一覽（整理自圖 15.4，pp. 702–703）</p><div class="tw"><table><colgroup><col style="width:18.4%"><col style="width:30.3%"><col style="width:21.1%"><col style="width:30.3%"></colgroup><thead><tr><th scope="col">策略</th><th scope="col">做法</th><th scope="col">最適合誰</th><th scope="col">教育例</th></tr></thead><tbody><tr><td>理想型（理念型）</td><td>建一個純粹的模型，拿實際個案與它比較</td><td>比較個案或制度</td><td>先寫出「理想的教師專業學習社群」五項特徵，比較三所學校與它的距離</td></tr><tr><td>漸次接近（連續接近）</td><td>在資料與概念之間反覆來回，每一輪修正概念、補蒐資料</td><td>所有質性研究的共通邏輯</td><td>從「AI 減輕負擔」出發，遇到反例改成「負擔轉移」，再補訪資深教師</td></tr><tr><td>舉例法（例證法）</td><td>把理論概念當「空盒子」，用證據填滿</td><td>以理論架構分析個案</td><td>以 TPACK 的成分當空盒子，用個案教師的備課實例填入</td></tr><tr><td>領域分析</td><td>找出文化領域：表面詞彙、內含詞彙、語意關係</td><td>民族誌、研究次文化用語</td><td>學生口中的「水課」「涼課」「硬課」是哪一種課</td></tr><tr><td>分析比較</td><td>用一致法與差異法跨三到十個個案比較</td><td>多重個案研究</td><td>比較 6 所學校，看「校長支持」與「社群運作」是否須同時存在</td></tr><tr><td>敘事分析</td><td>分析事件之間的連結與時間順序</td><td>歷程、政策、學校變革研究</td><td>把 108 課綱推動分期，找出關鍵時刻</td></tr><tr><td>反面個案方法</td><td>深入一個不符理論預期的個案，用它修正理論</td><td>想修正既有理論</td><td>社經地位低、成績卻長期優於預期的偏鄉學校</td></tr></tbody></table></div>
+<h3 id="s11" class="h2">1. 理想型（pp. 684–686）</h3>
+<ul class="lst"><li class="lv1"><b>兩種用法：</b><span class="">對照脈絡——以理想型為基準，突顯每個個案的獨特之處；類比——用已知的關係描述資料中的模式（例如說某社會中女性「被當奴隸對待」，是把主奴關係的理想型套上去，指出重大相似處）。</span></li><li class="lv1"><b>教育例：</b><span class="">受訪教師說 AI「像一個什麼都敢回答的實習老師」，可以發展成類比式的分析概念，但要說明哪些面向相似、哪些不相似。</span></li></ul>
+<h3 id="s12" class="h2">2. 漸次接近（p. 686）</h3>
+<p>從研究問題與概念架構出發 → 深入資料，看概念與證據是否契合 → 調整概念 → 補蒐證據處理沒解決的問題 → 重複。每一輪都是暫時的，但概念會越來越貼近證據。Weston 團隊的編碼修正就是一例。</p>
+<h3 id="s13" class="h2">3. 舉例法（pp. 686–687）</h3>
+<div class="tw"><table><colgroup><col style="width:23.7%"><col style="width:76.3%"></colgroup><thead><tr><th scope="col">形式（資訊箱 15.4）</th><th scope="col">做法</th></tr></thead><tbody><tr><td>個案澄清</td><td>用理論模型讓單一個案更容易理解</td></tr><tr><td>平行示範</td><td>把多個個案並置，顯示同一理論在各個案中都成立（Paige 以秘魯、安哥拉、越南示範農民衝突模型）</td></tr><tr><td>模式配對</td><td>把個案的觀察與理論的預期模式配對，允許排除部分觀念以縮小可能的解釋</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>限制（p. 687）：</b><span class="">同一個案的資料可能同時填得進好幾種理論的空盒子；只用一個個案也不能建立可概化的解釋。</span></li></ul>
+<h3 id="s14" class="h2">4. 領域分析（pp. 687–691）</h3>
+<p>源自認知人類學（Spradley）：研究人們怎麼把世界分類。文化領域由三部分組成——表面詞彙（領域名稱）、內含詞彙（次類別）、語意關係（兩者如何連結）。例：「證人」是表面詞彙，辯護證人、專業證人是內含詞彙，語意關係是「某一種的」（p. 688）。</p>
+<ul class="lst"><li class="lv1"><b>三種領域：</b><span class="">民俗領域用成員自己的行話；混合領域加上研究者的命名；分析領域的詞彙來自研究者與理論。</span></li><li class="lv1"><b>步驟（資訊箱 15.5）：</b><span class="">反覆閱讀筆記 → 整理成十多個組織性觀念 → 發展新觀念 → 依邏輯相似性歸群 → 比較對照、組成更大的群 → 連結成整合性的主題。</span></li></ul>
+<p class="note">譯名提醒：「表面詞彙」（cover term，常譯「涵蓋詞」）和前面的「表面事實」（outcroppings）毫無關係。圖表 15.1（p. 689）有兩列譯名幾乎重疊，依 Spradley 的分類，其中一列應是「理由」關係。</p>
+<h3 id="s15" class="h2">5. 分析比較（pp. 690–693）</h3>
+<p>以 Mill 的一致法與差異法為基礎，一定要有多個個案（通常三到十個）。</p>
+<ul class="lst"><li class="lv1"><b>一致法：</b><span class="">找有共同結果的個案，再找它們的共同原因；不是所有個案都有的特徵就被淘汰。</span></li><li class="lv1"><b>差異法：</b><span class="">找在許多方面相似、但結果不同的個案，比較出關鍵差異；通常比一致法有說服力。</span></li></ul>
+<p class="cap">範例 15.2　Skocpol 的革命理論（p. 692）</p><div class="tw"><table><colgroup><col style="width:38.2%"><col style="width:19.7%"><col style="width:19.7%"><col style="width:22.4%"></colgroup><thead><tr><th scope="col">個案</th><th scope="col">政府解體</th><th scope="col">農民起義</th><th scope="col">發生革命</th></tr></thead><tbody><tr><td>法國、1917 年俄國、中國</td><td>是</td><td>是</td><td>是</td></tr><tr><td>英國</td><td>是</td><td>否</td><td>否</td></tr><tr><td>1905 年俄國</td><td>否</td><td>是</td><td>否</td></tr><tr><td>德國、普魯士、日本</td><td>否</td><td>否</td><td>否</td></tr></tbody></table></div>
+<p>前三個個案用一致法；與英國、1905 年俄國對照則是差異法——只有其中一個條件就沒有革命，表示兩個條件須同時出現。範例 15.3（p. 693）把 15 個街友組織依「是否持續一年以上」分組，從 14 種資源中找出 9 種必要資源。</p>
+<h3 id="s16" class="h2">6. 敘事分析（pp. 692–699）</h3>
+<p>分析焦點是事件與事件之間的連結，而不是變項；時間（順序、步調、持續時間）是核心。敘事有六項特色（資訊箱 15.6）：訴說故事、有過程感、有複雜脈絡中的連結、牽涉做選擇的行動者、內容連貫、有時間順序。</p>
+<div class="tw"><table><colgroup><col style="width:23.7%"><col style="width:40.8%"><col style="width:35.5%"></colgroup><thead><tr><th scope="col">工具</th><th scope="col">意思</th><th scope="col">教育例</th></tr></thead><tbody><tr><td>路徑相依：自我強化</td><td>一個開端啟動之後，慣性讓過程沿同一路徑持續（QWERTY 鍵盤）</td><td>為升學設計的早自習考卷制度，新課綱下仍延續</td></tr><tr><td>路徑相依：反應順序</td><td>每一步回應前一步，路徑可能彎曲甚至倒轉</td><td>實驗教育快速擴張，引發反彈後轉為緊縮</td></tr><tr><td>時期劃分</td><td>把連續的時間切成幾個時期，切割點要有理論依據</td><td>108 課綱的規劃期、試行期、全面實施期</td></tr><tr><td>關鍵時刻</td><td>數個選擇並存，選定其中一個後產生長期影響</td><td>COVID-19 停課使線上教學成為學校的常備能力</td></tr></tbody></table></div>
+<p class="note">方法學提醒：Neuman 的敘事分析出自歷史社會學，重點在事件序列與因果解釋。教育領域常見的敘事探究（如 Clandinin 與 Connelly）更強調經驗、意義，以及研究者與參與者共同建構故事。第三章應寫明自己採用哪一種傳統，不宜混用。</p>
+<h3 id="s17" class="h2">7. 反面個案方法（pp. 699–703）★</h3>
+<p>分析不只看資料裡有的，也要看「本應發生卻沒發生」的事——就像福爾摩斯注意到看門狗沒有叫。反面個案方法是深入一個不符合理論預期的個案，用它修正理論。例：15 世紀的托斯卡尼具備工業資本主義的所有先決條件，卻沒有發展出來；Emigh（2003）因此找到先前理論沒考慮到的因素。</p>
+<div class="tw"><table><colgroup><col style="width:35.5%"><col style="width:64.5%"></colgroup><thead><tr><th scope="col">反面證據的類型（資訊箱 15.7）</th><th scope="col">教育例</th></tr></thead><tbody><tr><td>1. 沒有發生的事件</td><td>學校推動學生自治，卻從未有人提案修改服儀規定</td></tr><tr><td>2. 民眾沒有察覺的事件</td><td>師生都沒注意到分組總是依成績</td></tr><tr><td>3. 民眾想要隱瞞的事件</td><td>受訪者避談校內考績的爭議</td></tr><tr><td>4. 被忽視的平常事件</td><td>教師習慣只點前排學生，被視為理所當然</td></tr><tr><td>5. 研究者先入為主</td><td>預設偏鄉數位落差大，漏看偏鄉教師的創新做法</td></tr><tr><td>6. 無意識地沒有記錄</td><td>當時覺得午餐閒聊不重要，重讀筆記才發現是關鍵</td></tr><tr><td>7. 有意識地沒有報告</td><td>為保護受訪者而略去；但不呈現不支持自己詮釋的證據，違反研究倫理</td></tr></tbody></table></div>
+<p class="note">方法學提醒：Lincoln 與 Guba 的「負面個案分析」是一種可信度技術——反覆修正類別，直到能解釋所有個案或明確交代例外。Neuman 的版本偏向「用一個不符預期的個案修正既有理論」。兩者精神相通但用途不同，引用時要說清楚是哪一種。</p>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：寫明採用哪一種（或哪幾種）分析策略，不要只寫「採質性分析」。例：「採分析比較，以一致法與差異法比較 N 個個案」；「採舉例法中的模式配對，並承認單一個案的推論限制」。</p><p>第三章「研究品質」：寫明會主動找反例，以及找到反例時怎麼處理。資訊箱 15.7 第 5–7 項可轉成研究者的自我檢核清單。</p><p>第四章：每個主題之後另寫一段「不符合此模式的個案」，交代反例與可能的解釋。</p></div>
+<h2 id="s18" class="h1">五、其他技術（pp. 703–707）</h2>
+<div class="tw"><table><colgroup><col style="width:18.4%"><col style="width:36.8%"><col style="width:44.7%"></colgroup><thead><tr><th scope="col">技術</th><th scope="col">做法</th><th scope="col">教育例</th></tr></thead><tbody><tr><td>網絡分析</td><td>畫出人、組織或事件之間的關係圖</td><td>教師社群中「誰向誰請教教學問題」，找出非正式的教學領導者</td></tr><tr><td>時間分配分析</td><td>看人或組織實際怎麼花時間，揭露真正的優先順序</td><td>教師一週花在行政、備課、輔導的時數，對照學校宣稱的理念</td></tr><tr><td>流程圖與時間次序</td><td>畫出步驟、決策點與分支（圖 15.5 做蛋糕）</td><td>學生出現輟學徵兆到轉介輔導的校內流程</td></tr><tr><td>多重分類程序</td><td>請研究對象把卡片分堆並說明標準，重複幾次</td><td>請國中生把 20 種課後活動分類，了解他們怎麼區分學習與休閒</td></tr><tr><td>圖表</td><td>人物 × 屬性表、社會關係圖、概念圖等（圖 15.6）</td><td>受訪者 × 主題矩陣，記錄每位受訪者是否提到某主題</td></tr><tr><td>地圖</td><td>把資料放上地圖看空間關係；地圖也可能誤導</td><td>各區學校的資源分布</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>寫進第四章：</b><span class="">圖 15.6 的「人物 × 屬性」表適合在第四章開頭介紹受訪者背景與主題分布（記得去識別化）。</span></li></ul>
+<h2 id="s19" class="h1">六、質化分析軟體、QCA 與事件結構分析（pp. 707–713）</h2>
+<div class="tw"><table><colgroup><col style="width:31.6%"><col style="width:68.4%"></colgroup><thead><tr><th scope="col">軟體功能類別</th><th scope="col">能做什麼</th></tr></thead><tbody><tr><td>文本檢索</td><td>搜尋字詞、同義詞，可用 and、or、not 組合</td></tr><tr><td>以文本為基礎的管理程式</td><td>組織搜尋結果，加上日期、性別、地點等文件資訊</td></tr><tr><td>編碼與檢索程式</td><td>把代碼附在段落上，同一段可有多個碼；整理成樹狀結構，依代碼叫出所有段落</td></tr><tr><td>以編碼為基礎的理論建構程式</td><td>操作代碼之間的關係（若……則……），用來建立或檢驗理論</td></tr><tr><td>概念網絡建構程式</td><td>以節點與連線畫出概念圖</td></tr></tbody></table></div>
+<ul class="lst"><li class="lv1"><b>今日的 MAXQDA、NVivo、ATLAS.ti 一套軟體就具備上述多數功能，</b><span class="">書中的五類宜看成「功能」分類，而不是「產品」分類（本書的軟體介紹反映 2000 年代初期的狀況）。</span></li><li class="lv1"><b>質化比較分析 QCA（pp. 709–711）：</b><span class="">Ragin 發展，用布林邏輯與真值表分析「哪些條件組合導致某結果」，可以找出多條通往同一結果的路徑。範例 15.5 分析 82 個工作場所，找出三類工作場所與不同的抗拒形式。譯本稱「量數」，通行術語是「條件」與「結果」。</span></li><li class="lv1"><b>事件結構分析（pp. 710–713）：</b><span class="">把敘事資料整理成事件序列，逐一追問「A 是不是 X 導致 Y 的必要前提」。圖 15.7 重建 1930 年一起私刑事件，結論是關鍵在於原本可以阻止的執法者「沒有行動」——這本身也是一個反面證據。</span></li><li class="lv1"><b>不論哪一種軟體，</b><span class="">分析判斷仍由研究者負責；QCA 算出的最簡條件組合，也要由研究者詮釋（p. 710）。</span></li></ul>
+<div class="warn"><p class="wh">⚠ 寫進論文</p><p>第三章：寫明使用哪一套軟體、哪個版本、用到哪些功能（編碼、檢索、文件變項、備忘錄、概念圖），並說明軟體只協助管理與檢索。</p><p>第四章：代碼樹可整理成「主題—次主題」表；概念圖可作為各主題關係的總結圖。</p><p>資料紅線：本機版軟體符合本課「訪談資料特別條款」；雲端或 AI 輔助功能不得放入可識別的原始資料。</p></div>
+<h2 id="s20" class="h1">七、結論（pp. 712–713）</h2>
+<p>質化資料比數字更難處理：沒有現成的統計程序，必須反覆閱讀、仔細反思，依邏輯與判斷比較。多數質化分析都包括編碼與撰寫分析備忘錄，兩者都費力又耗時。本章的技術只是眾多技術的一部分；同時要記得思考反面證據與資料中「沒有出現」的事。</p>
+<h2 id="s21" class="h1">八、譯本與方法學提醒一覽</h2>
+<div class="tw"><table><colgroup><col style="width:11.8%"><col style="width:42.1%"><col style="width:46.1%"></colgroup><thead><tr><th scope="col">頁碼</th><th scope="col">譯本的寫法</th><th scope="col">提醒</th></tr></thead><tbody><tr><td>全章</td><td>理想型／漸次接近／舉例法／反面個案</td><td>通行譯法為理念型／連續接近／例證法／負面個案，指同一組策略</td></tr><tr><td>673</td><td>質化解釋「若不是高度不可靠，就是高度可信」</td><td>原意較可能是可信度落在一個連續範圍上，以證據排除較不可信者</td></tr><tr><td>674</td><td>對「質化」資料編碼時要把變項量數轉成機器可讀格式</td><td>依上下文應為「量化」資料編碼，疑為譯誤</td></tr><tr><td>677</td><td>不編碼的資料「就是無用的資料」</td><td>與研究問題無關的資料可暫不編碼，不代表永遠無用</td></tr><tr><td>679–680</td><td>選擇性編碼＝回頭挑能說明主題的資料</td><td>紮根理論的選擇性編碼是選定核心類別、整合其他類別；宣稱採紮根理論時引原書</td></tr><tr><td>688</td><td>文化領域的邊欄定義寫成「一個場域、迷你文化」</td><td>依內文與 Spradley，文化領域是「意義的類別」，不是地點</td></tr><tr><td>688</td><td>cover term 譯「表面詞彙」</td><td>與「表面事實」無關；常譯「涵蓋詞」</td></tr><tr><td>689</td><td>圖表 15.1 兩列譯名幾乎重疊</td><td>依 Spradley 分類，其一應為「理由」關係</td></tr><tr><td>692–699</td><td>敘事分析</td><td>偏歷史社會學；與教育的敘事探究傳統不同</td></tr><tr><td>699–703</td><td>反面個案方法</td><td>與 Lincoln 與 Guba 的負面個案分析用途不同</td></tr><tr><td>711</td><td>QCA 的「量數」；「36 種可能組合」</td><td>通行術語為條件與結果；6 個二分條件理論上有 64 種組合</td></tr></tbody></table></div>
+<h2 id="s22" class="h1">九、中譯本邊欄名詞</h2>
+<div class="tw"><table><colgroup><col style="width:34.2%"><col style="width:50.0%"><col style="width:15.8%"></colgroup><thead><tr><th scope="col">名詞</th><th scope="col">英文</th><th scope="col">頁碼</th></tr></thead><tbody><tr><td>開放式／主軸式／選擇性編碼</td><td>open / axial / selective coding</td><td>674、677、679</td></tr><tr><td>表面事實</td><td>outcroppings</td><td>682</td></tr><tr><td>漸次接近（連續接近）</td><td>successive approximation</td><td>686</td></tr><tr><td>舉例法（例證法）／空盒子</td><td>illustrative method / empty boxes</td><td>686</td></tr><tr><td>領域分析／文化領域</td><td>domain analysis / cultural domain</td><td>688</td></tr><tr><td>民俗／混合／分析領域</td><td>folk / mixed / analytic domain</td><td>688–689</td></tr><tr><td>分析比較／一致法／差異法</td><td>analytic comparison / method of agreement / method of difference</td><td>690–692</td></tr><tr><td>敘事分析</td><td>narrative analysis</td><td>695</td></tr><tr><td>路徑相依</td><td>path dependency</td><td>696</td></tr><tr><td>時期劃分</td><td>periodization</td><td>697</td></tr><tr><td>歷史偶然性</td><td>historical contingency</td><td>698</td></tr><tr><td>反面個案方法</td><td>negative case method</td><td>701</td></tr><tr><td>質化比較分析</td><td>qualitative comparative analysis (QCA)</td><td>709</td></tr><tr><td>事件結構分析</td><td>event-structure analysis (ESA)</td><td>710</td></tr></tbody></table></div>
+<h2 id="s23" class="h1">十、常見誤解</h2>
+<div class="tw"><table><colgroup><col style="width:36.8%"><col style="width:63.2%"></colgroup><thead><tr><th scope="col">誤解</th><th scope="col">其實</th></tr></thead><tbody><tr><td>質性分析等資料都蒐集完再開始</td><td>蒐集時就開始，早期分析引導後續蒐集（p. 671）</td></tr><tr><td>編碼就是貼標籤、整理資料</td><td>編碼是分析本身；完整的碼有五個部分（pp. 674、676）</td></tr><tr><td>編碼系統一開始就要定好</td><td>會反覆修正；Weston 團隊花了四年（p. 678）</td></tr><tr><td>備忘錄是可有可無的筆記</td><td>備忘錄把資料連到理論，好的備忘錄可直接改寫進報告（p. 680）</td></tr><tr><td>質性結果就是整理受訪者說了什麼</td><td>那只是表面事實；還要推論底層結構、排除替代解釋（pp. 673、683）</td></tr><tr><td>只要報告支持我主題的引句</td><td>要主動找反例，並在結果中交代（pp. 699–703）</td></tr><tr><td>用 MAXQDA 就等於做了分析</td><td>軟體只管理與檢索資料，判斷仍是研究者的事（p. 710）</td></tr><tr><td>一個個案填滿了理論的空盒子，理論就成立了</td><td>同一份資料可能填得進好幾種理論；單一個案無法概化（p. 687）</td></tr></tbody></table></div>
+<h2 id="s24" class="h1">十一、讀完該能回答的問題</h2>
+<ol class="lst"><li><b>質化與量化資料分析有哪四個相似、四個相異處？</b>為什麼說質化分析在蒐集時就開始？</li><li><b>開放式、主軸式、選擇性編碼各在做什麼？</b>用你自己的一份逐字稿說明三者的差別。</li><li><b>分析備忘錄和資料筆記為什麼要分開保存？</b>你打算怎麼判定某個主題已經飽和？</li><li><b>七種分析策略中，</b>哪一種最適合你的研究？為什麼？</li><li><b>一致法與差異法怎麼運作？</b>在範例 15.2 中，哪些個案支持一致法、哪些支持差異法？</li><li><b>七種反面證據中，</b>哪三種與研究者自己有關？你要怎麼防範？</li><li><b>MAXQDA 能幫你做什麼、不能幫你做什麼？</b></li></ol>
+<h3 id="s25" class="h2">小練習一：為你的一個碼寫出五個部分</h3>
+<div class="tw"><table><colgroup><col style="width:26.3%"><col style="width:73.7%"></colgroup><thead><tr><th scope="col">部分</th><th scope="col">你的寫法</th></tr></thead><tbody><tr><td>標籤</td><td>（一到三個字）</td></tr><tr><td>定義</td><td>（這個碼的主要特徵）</td></tr><tr><td>旗幟</td><td>（在逐字稿裡看到什麼就標這個碼）</td></tr><tr><td>納入與排除條件</td><td>（什麼算、什麼不算）</td></tr><tr><td>範例</td><td>（一段去識別化的引句）</td></tr></tbody></table></div>
+<h3 id="s26" class="h2">小練習二：這個研究適合哪一種分析策略？</h3>
+<div class="tw"><table><colgroup><col style="width:63.2%"><col style="width:36.8%"></colgroup><thead><tr><th scope="col">研究構想</th><th scope="col">參考答案</th></tr></thead><tbody><tr><td>比較 8 所學校，找出推動雙語教育能否持續的關鍵條件</td><td>（分析比較；條件多時可考慮 QCA）</td></tr><tr><td>一所學校十年來從禁止手機到推動行動學習的轉變</td><td>（敘事分析：時期劃分、關鍵時刻）</td></tr><tr><td>用自我決定理論的三個需求，分析兩位學生的學習動機</td><td>（舉例法；注意單一或少數個案的推論限制）</td></tr><tr><td>研究高中生如何稱呼與分類各種補習班</td><td>（領域分析）</td></tr><tr><td>多數研究說數位落差拉大成就差距，某偏鄉學校卻相反</td><td>（反面個案方法）</td></tr></tbody></table></div>
+<p class="note">括號內為參考答案。</p>
+<h2 id="s27" class="h1">附：頁碼與來源說明</h2>
+<ul class="lst"><li class="lv1"><b>頁碼：</b><span class="">本課 PDF 為掃描檔，書頁＝PDF 頁＋668；章首頁 p. 669 未印頁碼，PDF 第 48 頁（p. 716）為空白。</span></li><li class="lv1"><b>待核對：</b><span class="">p. 673、674、677、689 的譯文，以及範例 15.5 的組合數，皆未對照英文原書。</span></li><li class="lv1"><b>完整逐頁整理：</b><span class="">07-讀本與參考文獻／中文譯本-Neuman當代社會研究法／CH15-質化資料分析-逐頁閱讀整理-前半.md、後半.md。</span></li><li class="lv1"><b>與其他讀本的關係：</b><span class="">三級詮釋與紮根理論見「研讀重點-Neuman第6章」；MAXQDA 操作見「MAXQDA 新手上路 SOP」；個案研究的模式配對與對立解釋見 Yin（2009）第 5 章。</span></li></ul>
+  </main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  try{var t=localStorage.getItem('w3-theme');if(t)root.setAttribute('data-theme',t)}catch(e){}
+  document.getElementById('theme').onclick=function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    var nt=dark?'light':'dark';root.setAttribute('data-theme',nt);try{localStorage.setItem('w3-theme',nt)}catch(e){}
+  };
+  document.getElementById('print').onclick=function(){
+    [].forEach.call(document.querySelectorAll('details'),function(d){d.open=true});window.print();
+  };
+  // 寬螢幕展開目錄（手機維持收起）；展開後版面會變，若網址帶 #錨點就重新對齊
+  if(!matchMedia('(max-width:900px)').matches){var tb=document.querySelector('.tocbox');if(tb)tb.open=true}
+  if(location.hash){var el=document.getElementById(location.hash.slice(1));if(el)el.scrollIntoView()}
+  // 複製 prompt
+  [].forEach.call(document.querySelectorAll('.paste'),function(box){
+    var b=box.querySelector('.copy');
+    b.onclick=function(){
+      var txt=[].map.call(box.querySelectorAll('.pb p'),function(p){return p.textContent}).join('\n');
+      function ok(){b.textContent='已複製';b.classList.add('done');setTimeout(function(){b.textContent='複製';b.classList.remove('done')},1600)}
+      function fallback(){var r=document.createRange();r.selectNodeContents(box.querySelector('.pb'));
+        var s=getSelection();s.removeAllRanges();s.addRange(r);
+        try{document.execCommand('copy');ok()}catch(e){b.textContent='已選取，請按 ⌘C'}}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,fallback)}else{fallback()}
+    };
+  });
+  // 複製單一指令
+  [].forEach.call(document.querySelectorAll('.copy1'),function(b){b.onclick=function(){
+    var txt=b.getAttribute('data-t');
+    function ok(){b.textContent='已複製';b.classList.add('done');setTimeout(function(){b.textContent='複製';b.classList.remove('done')},1400)}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){b.textContent='請手動選取'})}else{b.textContent='請手動選取'}
+  }});
+  // 目錄高亮
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(en){if(!en.isIntersecting)return;
+      links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
+    links.forEach(function(a){var el=document.getElementById(a.getAttribute('href').slice(1));if(el)io.observe(el)});
+  }
+
+  // ===== 學習單：彈性填寫欄位（2026-09-22 追加）=====
+  // localStorage 安全存取層：瀏覽器封鎖網站資料時整段不得拋錯（沿用 build_web_v8 的作法）
+  var KEY='neuman-ch15', LS=(function(){
+    var ok=false;try{localStorage.setItem('__t','1');localStorage.removeItem('__t');ok=true}catch(e){}
+    return {ok:ok,
+      get:function(){if(!ok)return{};try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}},
+      set:function(o){if(!ok)return;try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}},
+      del:function(){if(!ok)return;try{localStorage.removeItem(KEY)}catch(e){}}};
+  })();
+  var DB=LS.get(), tmr=null;
+  function save(){clearTimeout(tmr);tmr=setTimeout(function(){LS.set(DB);flash()},250)}
+  var stat=document.getElementById('sstat');
+  function flash(){if(!stat||!LS.ok)return;var o=stat.textContent;stat.textContent='已儲存';
+    clearTimeout(flash.t);flash.t=setTimeout(function(){stat.textContent=o},1100)}
+  var saver=document.querySelector('.saver');
+  if(saver&&!LS.ok){saver.classList.add('off');
+    if(stat)stat.textContent='這個瀏覽器封鎖了網站資料，填寫不會被記住（其他功能不受影響）。列印或另存前請先確認內容還在。';
+    var cb=document.getElementById('clearall');if(cb)cb.disabled=true}
+
+  function grow(el){el.style.height='auto';el.style.height=(el.scrollHeight+2)+'px'}
+  function growAll(){[].forEach.call(document.querySelectorAll('textarea'),grow)}
+
+  // 文字欄位：還原 → 自動長高 → 輸入即存
+  [].forEach.call(document.querySelectorAll('textarea.fin'),function(el){
+    var k=el.getAttribute('data-k');if(DB[k])el.value=DB[k];grow(el);
+    el.addEventListener('input',function(){grow(el);DB[k]=el.value;if(!el.value)delete DB[k];save()});
+  });
+  // 勾選框
+  [].forEach.call(document.querySelectorAll('input[type=checkbox][data-k]'),function(el){
+    var k=el.getAttribute('data-k');if(DB[k])el.checked=true;
+    el.addEventListener('change',function(){if(el.checked){DB[k]=1}else{delete DB[k]}save()});
+  });
+  // 評量格：點一下循環 v → △ → × → 空白
+  var CYC=['v','△','×'];
+  [].forEach.call(document.querySelectorAll('.rb'),function(b){
+    var k=b.getAttribute('data-k');
+    function paint(v){if(v){b.textContent=v;b.setAttribute('data-v',v)}else{b.textContent='·';b.removeAttribute('data-v')}}
+    paint(DB[k]);
+    b.onclick=function(){var i=CYC.indexOf(DB[k]||'');var nv=CYC[i+1]||'';
+      if(nv){DB[k]=nv}else{delete DB[k]}paint(nv);save()};
+  });
+  // 可增減列數的表格
+  [].forEach.call(document.querySelectorAll('.rep'),function(rep){
+    var k=rep.getAttribute('data-k'), nc=+rep.getAttribute('data-cols');
+    var tb=rep.querySelector('tbody');
+    var heads=[].map.call(rep.querySelectorAll('thead th'),function(th){
+      return th.textContent.replace(/"/g,'&quot;')}).slice(0,nc);
+    function cells(row,vals){
+      var h='';for(var c=0;c<nc;c++){h+='<td data-l="'+heads[c]+'"><textarea rows="1" data-c="'+c+'">'+
+        ((vals&&vals[c]?vals[c]:'').replace(/[&<>]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m]}))+'</textarea></td>'}
+      return h+'<td class="rmc"><button type="button" class="rm" aria-label="刪除這一列">✕</button></td>';
+    }
+    function collect(){
+      DB[k]=[].map.call(tb.rows,function(tr){return [].map.call(tr.querySelectorAll('textarea'),function(x){return x.value})});
+      if(!DB[k].some(function(r){return r.some(function(v){return v})}))delete DB[k];
+      save();
+    }
+    function addRow(vals){
+      var tr=tb.insertRow(-1);tr.innerHTML=cells(tr,vals);
+      [].forEach.call(tr.querySelectorAll('textarea'),function(x){grow(x);
+        x.addEventListener('input',function(){grow(x);collect()})});
+      tr.querySelector('.rm').onclick=function(){
+        if(tb.rows.length<=1){[].forEach.call(tr.querySelectorAll('textarea'),function(x){x.value='';grow(x)})}
+        else{tr.parentNode.removeChild(tr)}collect()};
+      return tr;
+    }
+    var saved=DB[k];
+    if(saved&&saved.length){saved.forEach(function(r){addRow(r)})}
+    else{for(var i=0;i<(+rep.getAttribute('data-start')||3);i++)addRow(null)}
+    rep.querySelector('.addr').onclick=function(){var tr=addRow(null);var f=tr.querySelector('textarea');if(f)f.focus()};
+  });
+  // 抽狀況卡
+  var draw=document.getElementById('draw');
+  if(draw){draw.onclick=function(){
+    var cs=[].slice.call(document.querySelectorAll('.card'));if(!cs.length)return;
+    var i=Math.floor(Math.random()*cs.length);
+    cs.forEach(function(c,j){c.classList.toggle('hit',j===i)});
+    var out=document.getElementById('drawout');
+    if(out)out.textContent='抽到 '+cs[i].querySelector('.cno').textContent+'　'+cs[i].querySelector('.ct').textContent;
+    cs[i].scrollIntoView({block:'nearest',behavior:'smooth'});
+  }}
+  // 清除
+  var clr=document.getElementById('clearall');
+  if(clr)clr.onclick=function(){
+    if(!confirm('清除這一頁所有填寫內容？此動作無法復原。'))return;
+    DB={};LS.del();
+    [].forEach.call(document.querySelectorAll('textarea'),function(x){x.value='';grow(x)});
+    [].forEach.call(document.querySelectorAll('input[type=checkbox][data-k]'),function(x){x.checked=false});
+    [].forEach.call(document.querySelectorAll('.rb'),function(b){b.textContent='·';b.removeAttribute('data-v')});
+    if(stat)stat.textContent='已清除';
+  };
+  // 字型載入後行高會變，重算一次高度；列印前也重算
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(growAll);
+  addEventListener('load',growAll);addEventListener('beforeprint',growAll);
+})();
+</script>
+</body>
+</html>
